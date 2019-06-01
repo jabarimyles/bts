@@ -65,7 +65,7 @@ def get_table(soup):
         # and add it as a separate column.
         mlb_id_match = mlb_re.search(str(row.find('a')))
         if mlb_id_match is not None:
-            cols.append(mlb_id_match[1])
+            cols.append(mlb_id_match.group(1))
 
         data.append([ele for ele in cols])
     data = pd.DataFrame(data)
@@ -117,8 +117,8 @@ def batting_stats_bref(season=None):
 
 def bwar_bat(return_all=False):
     """
-    Get data from war_daily_bat table. Returns WAR, its components, and a few other useful stats. 
-    To get all fields from this table, supply argument return_all=True.  
+    Get data from war_daily_bat table. Returns WAR, its components, and a few other useful stats.
+    To get all fields from this table, supply argument return_all=True.
     """
     url = "http://www.baseball-reference.com/data/war_daily_bat.txt"
     s = requests.get(url).content
