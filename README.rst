@@ -4,6 +4,12 @@ baseball_scraper
 
 `baseball_scraper` is a Python package for baseball data analysis. This package scrapes baseball-reference.com and baseballsavant.com so you don't have to. So far, the package performs four main tasks: retrieving statcast data, pitching stats, batting stats, and division standings/team records. Data is available at the individual pitch level, as well as aggregated at the season level and over custom time periods. 
 
+Status
+------
+
+.. image:: https://travis-ci.com/spilchen/baseball_scraper.svg?branch=master
+    :target: https://travis-ci.com/spilchen/baseball_scraper
+
 Statcast
 --------
 
@@ -156,6 +162,22 @@ Batting stats are obtained similar to pitching stats. The function call for gett
   [5 rows x 28 columns]
 
 
+Batting Projections
+-------------------
+
+Various baseball projections are available at fangraphs.com.  You can scrape that site using the batting_projection API.  You supply it the fangraph player ID to lookup and the projection system.  It will return a DataFrame with the projections.
+
+::
+
+  >>> from baseball_scraper import batting_projection
+  >>> proj = batting_projection.FanGraphs('9112')
+  >>> proj.instances()
+  ['ZiPS (R)', 'Steamer (R)', 'Depth Charts (R)', 'THE BAT (R)']
+  >>> proj.scrape('ZiPS (R)')
+    G   AB   PA   H  1B  2B  3B  HR   R  RBI  BB  IBB   SO  HBP  SF  SH  GDP  SB  CS    AVG
+    0  88  323  363  79  42  13   0  24  49   64  34    3  102    4   2   0  NaN   0   0  0.246
+
+
 Game-by-Game Results and Schedule 
 ---------------------------------
 
@@ -223,6 +245,16 @@ or, for the version currently on the repo (which may at times be more up to date
   git clone https://github.com/spilchen/baseball_scraper
   cd baseball_scraper
   python setup.py install
+
+
+Testing
+-------
+
+We use pytest for testing the package.  It can be invoked as follows:
+
+::
+  python setup.py test
+
 
 Dependencies
 ------------
