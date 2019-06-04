@@ -162,21 +162,31 @@ Batting stats are obtained similar to pitching stats. The function call for gett
   [5 rows x 28 columns]
 
 
-Batting Projections
--------------------
+Fangraphs
+---------
 
-Various baseball projections are available at fangraphs.com.  You can scrape that site using the batting_projection API.  You supply it the fangraph player ID to lookup and the projection system.  It will return a DataFrame with the projections.
+Various baseball projections are available at fangraphs.com.  You can scrape that site using the fangraphs API.  You supply it the fangraph player ID to lookup and the projection system.  It will return a DataFrame with the projections.
 
 ::
 
-  >>> from baseball_scraper import batting_projection
+  >>> from baseball_scraper import fangraphs
   >>> from baseball_id import Lookup
-  >>> proj = batting_projection.FanGraphs(int(Lookup.from_names(['Khris Davis']).fg_id))
-  >>> proj.instances()
+  >>> player_id = Lookup.from_names(['Khris Davis']).iloc[0].fg_id
+  >>> fg = fangraphs.Scraper(player_id=player_id)
+  >>> fg.instances()
   ['ZiPS (R)', 'Steamer (R)', 'Depth Charts (R)', 'THE BAT (R)']
-  >>> proj.scrape('ZiPS (R)')
-    G   AB   PA   H  1B  2B  3B  HR   R  RBI  BB  IBB   SO  HBP  SF  SH  GDP  SB  CS    AVG
-    0  88  323  363  79  42  13   0  24  49   64  34    3  102    4   2   0  NaN   0   0  0.246
+  >>> df = proj.scrape(instance='ZiPS (R)')
+  >>> df.columns
+  Index(['G', 'AB', 'PA', 'H', '1B', '2B', '3B', 'HR', 'R', 'RBI', 'BB', 'IBB',
+         'SO', 'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS', 'AVG', 'BB%', 'K%', 'BB/K',
+         'OBP', 'SLG', 'OPS', 'ISO', 'Spd', 'BABIP', 'UBR', 'wGDP', 'wSB', 'wRC',
+         'wRAA', 'wOBA', 'wRC+'],
+       dtype='object')
+  >>> df
+      G   AB   PA   H  1B  2B  3B  HR   R  RBI  BB  ...    OPS    ISO  Spd  BABIP  UBR  wGDP  wSB  wRC  wRAA   wOBA  wRC+
+  0  88  323  363  79  42  13   0  24  49   64  34  ...  0.834  0.263  2.3   0.28  0.0   NaN -0.2   54   8.9  0.347   120
+
+  [1 rows x 36 columns]
 
 
 Game-by-Game Results and Schedule 
