@@ -170,7 +170,8 @@ Various baseball projections are available at fangraphs.com.  You can scrape tha
 ::
 
   >>> from baseball_scraper import batting_projection
-  >>> proj = batting_projection.FanGraphs('9112')
+  >>> from baseball_id import Lookup
+  >>> proj = batting_projection.FanGraphs(int(Lookup.from_names(['Khris Davis']).fg_id))
   >>> proj.instances()
   ['ZiPS (R)', 'Steamer (R)', 'Depth Charts (R)', 'THE BAT (R)']
   >>> proj.scrape('ZiPS (R)')
