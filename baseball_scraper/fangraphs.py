@@ -6,13 +6,14 @@ import pandas as pd
 class Scraper:
     """Pulls baseball stats for a single player from fangraphs.com
 
-    :param player_id: FanGraph ID of the player to lookup
+    :param player_id: FanGraph ID of the player to lookup.  This optional for
+        class init.  It can be set with the set_player_id API.
     :type player_id: str
     """
-    def __init__(self, player_id):
-        self.player_id = player_id
+    def __init__(self, player_id=None):
+        self.player_id = player_id  # Current player_id we are working on
         self.instance = None
-        self.raw_source = None
+        self.raw_source = {}   # A map of the raw source.  Key is the player_id
 
     def scrape(self, instance):
         """Generate a DataFrame of the stats that we pulled from fangraphs.com
@@ -27,6 +28,7 @@ class Scraper:
            empty DataFrame if projection system is not found.
         :rtype: DataFrame
         """
+        self._assert_playerid()
         self.instance = instance
         self._cache_source()
         return self._source_to_df()
@@ -40,6 +42,7 @@ class Scraper:
         :return: Names of the available sources
         :rtype: list(str)
         """
+        self._assert_playerid()
         self._cache_source()
         avail = set([])
         for table in self._find_stats_table():
@@ -48,26 +51,41 @@ class Scraper:
                 avail.add(row.find_all('td')[1].a.text.strip())
         return list(avail)
 
+    def set_player_id(self, player_id):
+        """Set the player_id for the next scrape
+
+        :param player_id: FanGraph ID of the player to scrape
+        :type player_id: str
+        """
+        self.player_id = player_id
+
     def set_source(self, s):
-        self.raw_source = s
+        self._assert_playerid()
+        self.raw_source[self.player_id] = s
 
     def save_source(self, f):
-        assert(self.raw_source is not None)
+        assert(self.player_id in self.raw_source)
         with open(f, "w") as fo:
-            fo.write(self.raw_source.prettify())
+            fo.write(self.raw_source[self.player_id].prettify())
+
+    def _assert_playerid(self):
+        if self.player_id is None:
+            raise RuntimeError("The player ID be set prior to calling this " +
+                               "API.  Use set_player_id().")
 
     def _uri(self):
         return "https://www.fangraphs.com/statss.aspx?playerid={}".format(
             self.player_id)
 
     def _cache_source(self):
-        if self.raw_source is None:
+        if self.player_id not in self.raw_source:
             self._soup()
 
     def _soup(self):
+        assert(self.player_id is not None)
         uri = self._uri()
         s = requests.get(uri).content
-        self.raw_source = BeautifulSoup(s, "lxml")
+        self.raw_source[self.player_id] = BeautifulSoup(s, "lxml")
 
     def _find_stats_table(self):
         def _is_stats_table(tag):
@@ -77,8 +95,8 @@ class Scraper:
             return tag.name == "table" and tag.has_attr("id") and \
                 tag["id"] in table_ids
 
-        assert(self.raw_source is not None)
-        for table in self.raw_source.find_all(_is_stats_table):
+        assert(self.player_id in self.raw_source)
+        for table in self.raw_source[self.player_id].find_all(_is_stats_table):
             yield table
 
     def _td_applies_to_instance(self, cols):
