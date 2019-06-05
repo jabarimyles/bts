@@ -187,6 +187,20 @@ Various baseball projections are available at fangraphs.com.  You can scrape tha
   0  88  323  363  79  42  13   0  24  49   64  34  ...  0.834  0.263  2.3   0.28  0.0   NaN -0.2   54   8.9  0.347   120
 
   [1 rows x 36 columns]
+  >>> player_id = Lookup.from_names(['Hyun-Jin Ryu']).iloc[0].fg_id
+  >>> fg = fangraphs.Scraper(player_id=player_id)
+  >>> df = fg.scrape(instance='ZiPS')
+  >>> df.columns
+  Index(['W', 'L', 'ERA', 'G', 'GS', 'CG', 'ShO', 'SV', 'HLD', 'BS', 'IP', 'TBF',
+       'H', 'R', 'ER', 'HR', 'BB', 'IBB', 'HBP', 'WP', 'BK', 'SO', 'K/9',
+       'BB/9', 'K/BB', 'HR/9', 'K%', 'BB%', 'K-BB%', 'AVG', 'WHIP', 'BABIP',
+       'LOB%', 'ERA-', 'FIP-', 'FIP'],
+      dtype='object')
+  >>> df
+     W  L   ERA   G  GS  CG  ShO  SV  HLD  BS    IP  ...  HR/9  K%  BB%  K-BB%    AVG  WHIP  BABIP   LOB%  ERA-  FIP-   FIP
+  0  6  5  3.89  17  17 NaN  NaN   0  NaN NaN  88.0  ...  1.43 NaN  NaN    NaN  0.264  1.25  0.311  0.763   NaN   NaN  4.15
+
+  [1 rows x 36 columns]
 
 
 Game-by-Game Results and Schedule 
