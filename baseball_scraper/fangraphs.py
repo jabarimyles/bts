@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import pickle
+import importlib.resources as pkg_resources
 
 
 class Scraper:
@@ -14,6 +16,8 @@ class Scraper:
         self.player_id = player_id  # Current player_id we are working on
         self.instance = None
         self.raw_source = {}   # A map of the raw source.  Key is the player_id
+        self.df_source = {}    # A map of the DataFrames.  Key is the player_id
+        self.cache_only = False  # Toggle to avoid calling out to scrape.
 
     def scrape(self, instance):
         """Generate a DataFrame of the stats that we pulled from fangraphs.com
@@ -31,7 +35,7 @@ class Scraper:
         self._assert_playerid()
         self.instance = instance
         self._cache_source()
-        return self._source_to_df()
+        return self.df_source[self.player_id]
 
     def instances(self):
         """Return a list of available data instances for the player
@@ -57,7 +61,7 @@ class Scraper:
         :param player_id: FanGraph ID of the player to scrape
         :type player_id: str
         """
-        self.player_id = player_id
+        self.player_id = str(player_id)
 
     def set_source(self, s):
         self._assert_playerid()
@@ -67,6 +71,23 @@ class Scraper:
         assert(self.player_id in self.raw_source)
         with open(f, "w") as fo:
             fo.write(self.raw_source[self.player_id].prettify())
+
+    def save_universe(self, f):
+        with open(f, "wb") as fo:
+            pickle.dump(self.df_source, fo)
+
+    def load_universe(self, f):
+        with open(f, "rb") as fo:
+            self.df_source = pickle.load(fo)
+
+    def load_fake_cache(self):
+        with pkg_resources.open_binary('baseball_scraper',
+                                       'sample.fangraphs.universe.pkl') as fo:
+            self.df_source = pickle.load(fo)
+        self.set_cache_only(True)
+
+    def set_cache_only(self, v):
+        self.cache_only = v
 
     def _assert_playerid(self):
         if self.player_id is None:
@@ -78,8 +99,13 @@ class Scraper:
             self.player_id)
 
     def _cache_source(self):
-        if self.player_id not in self.raw_source:
-            self._soup()
+        if self.player_id not in self.df_source:
+            if self.player_id not in self.raw_source:
+                if self.cache_only:
+                    raise RuntimeError("Cache-only request and player not "
+                                       "available in the cache")
+                self._soup()
+            self._raw_source_to_df()
 
     def _soup(self):
         assert(self.player_id is not None)
@@ -151,9 +177,9 @@ class Scraper:
                                     data.append(float(col))
         return data
 
-    def _source_to_df(self):
+    def _raw_source_to_df(self):
         (col_names, incl_cols) = self._scrape_col_names()
         data = self._scrape_stats(incl_cols)
         df = pd.DataFrame([data], columns=col_names)
         df.fillna(value=pd.np.nan, inplace=True)
-        return df
+        self.df_source[self.player_id] = df

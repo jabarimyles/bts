@@ -58,3 +58,11 @@ def test_scape_no_player_id():
         fg.instances()
     with pytest.raises(RuntimeError):
         fg.scrape('Steamer (R)')
+
+
+def test_fake_universe():
+    fg = fangraphs.Scraper()
+    fg.load_fake_cache()
+    fg.set_player_id(4106)
+    df = fg.scrape('ZiPS (R)')
+    assert(df['HR'][0] == 9)
