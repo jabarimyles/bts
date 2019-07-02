@@ -211,8 +211,10 @@ The `schedule_and_record` function returns a team's game-by-game results for a g
 ::
 
   >>> # Example: Let's take a look at the individual-game results of the 1927 Yankees
-  >>> from baseball_scraper import schedule_and_record
-  >>> data = schedule_and_record(1927, 'NYY')
+  >>> from baseball_scraper import baseball_reference
+  >>> s = baseball_reference.TeamScraper('NYY')
+  >>> s.set_season(1927)
+  >>> data = s.scrape()
   >>> data.head()
                   Date   Tm Home_Away  Opp W/L     R   RA   Inn  W-L  Rank  \
   1    Tuesday, Apr 12  NYY      Home  PHA   W   8.0  3.0   9.0  1-0   1.0
