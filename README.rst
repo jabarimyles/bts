@@ -206,7 +206,11 @@ Various baseball projections are available at fangraphs.com.  You can scrape tha
 Game-by-Game Results and Schedule 
 ---------------------------------
 
-The `schedule_and_record` function returns a team's game-by-game results for a given season, including game date, home and away teams, end result (W/L/Tie), score, winning/losing/saving pitchers, attendance, and division standing at that date. The function's only two arguments are `season` and `team`, where team is the team's abbreviation (i.e. NYY for New York Yankees, SEA for Seattle Mariners). If the season argument is set to the current season, the query returns results for past games and the schedule for those that have not occurred yet. 
+The `baseball_reference` team scraper returns a team's game-by-game results for a given season or date range.  The resulting DataFrame includes game date, home and away teams, end result (W/L/Tie), score, winning/losing/saving pitchers, attendance, and division standing at that date.
+
+You define the `team` when the scraper is created.  Then can reuse the scraper to scrape specific seasons or date ranges.  The team name provided is the abbreviation (i.e. NYY for New York Yankees, SEA for Seattle Mariners).
+
+If the season argument is set to the current season, the query returns results for past games and the schedule for those that have not occurred yet. 
 
 ::
 
@@ -229,6 +233,22 @@ The `schedule_and_record` function returns a team's game-by-game results for a g
   3    Tied     None     None  None  2:50   D      9000.0       2
   4    Tied  Pennock    Ehmke  None  2:27   D     16000.0       3
   5  up 1.0  Shocker  Ruffing  None  2:05   D     25000.0       4
+
+  >>> # Let get the games a team plays in a given week.
+  >>> s = baseball_reference.TeamScraper('TOR')
+  >>> s.set_date_range(dt.datetime(2019,6,2), dt.datetime(2019,6,8))
+  >>> df = s.scrape()
+  >>> df.head()
+
+           Date   Tm Home_Away  Opp W/L     R  ...     Save  Time D/N  Attendance Streak Orig. Scheduled
+  59 2019-06-02  TOR         @  COL   L   1.0  ...     None  2:43   D     37861.0   -6.0            None
+  60 2019-06-04  TOR      Home  NYY   W   4.0  ...    Giles  3:00   N     20671.0    1.0            None
+  61 2019-06-05  TOR      Home  NYY   W  11.0  ...     None  3:22   N     16609.0    2.0            None
+  62 2019-06-06  TOR      Home  NYY   L   2.0  ...  Chapman  3:07   N     25657.0   -1.0            None
+  63 2019-06-07  TOR      Home  ARI   L   2.0  ...     None  2:50   N     16555.0   -2.0            None
+
+  [5 rows x 19 columns]
+
 
 
 Standings

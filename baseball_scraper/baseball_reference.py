@@ -181,6 +181,8 @@ class TeamScraper:
             cols[16].string = "Unknown"
         if cols[15].text == "":
             cols[15].string = "Unknown"
+        if cols[17].text == "":
+            cols[17].string = "Unknown"
         return cols
 
     def _process_win_streak(self, data):
