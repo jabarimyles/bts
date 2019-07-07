@@ -132,7 +132,8 @@ class TeamScraper:
                              "combo. Please verify that your team " +
                              "abbreviation is accurate and that the team " +
                              "existed during the season you are searching " +
-                             "for.")
+                             "for. Team={}; Year={}".
+                             format(self.team, self.start_date.year))
 
     def _parse_row(self, row):
         """Parse a row and split it up into columns.
