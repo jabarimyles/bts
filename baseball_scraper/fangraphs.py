@@ -19,6 +19,14 @@ class Scraper:
         self.df_source = {}    # A map of the DataFrames.  Key is the player_id
         self.cache_only = False  # Toggle to avoid calling out to scrape.
 
+    def __getstate__(self):
+        return (self.player_id, self.instance, self.df_source)
+
+    def __setstate__(self, state):
+        (self.player_id, self.instance, self.df_source) = state
+        self.raw_source = {}
+        self.cache_only = False
+
     def scrape(self, instance):
         """Generate a DataFrame of the stats that we pulled from fangraphs.com
 
