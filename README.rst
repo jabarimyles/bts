@@ -167,40 +167,28 @@ Fangraphs
 
 Various baseball projections are available at fangraphs.com.  You can scrape that site using the fangraphs API.  You supply it the fangraph player ID to lookup and the projection system.  It will return a DataFrame with the projections.
 
+Note, due to the use of JavaScript on that site, we use Chrome through selenium to scrape the data.  Chrome must be installed on your system in order to use these APIs.
+
 ::
 
   >>> from baseball_scraper import fangraphs
   >>> from baseball_id import Lookup
   >>> player_id = Lookup.from_names(['Khris Davis']).iloc[0].fg_id
-  >>> fg = fangraphs.Scraper(player_id=player_id)
-  >>> fg.instances()
-  ['ZiPS (R)', 'Steamer (R)', 'Depth Charts (R)', 'THE BAT (R)']
-  >>> df = proj.scrape(instance='ZiPS (R)')
+  >>> fangraphs.Scraper.instances()
+  ['Steamer (RoS)', 'Steamer (Update)', 'ZiPS (Update)', 'Steamer600 (Update)', 'Depth Charts (RoS)', 'THE BAT (RoS)']
+  >>> fg = fangraphs.Scraper("Steamer (RoS)")
+  >>> df = fg.scrape(player_id)
   >>> df.columns
-  Index(['G', 'AB', 'PA', 'H', '1B', '2B', '3B', 'HR', 'R', 'RBI', 'BB', 'IBB',
-         'SO', 'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS', 'AVG', 'BB%', 'K%', 'BB/K',
-         'OBP', 'SLG', 'OPS', 'ISO', 'Spd', 'BABIP', 'UBR', 'wGDP', 'wSB', 'wRC',
-         'wRAA', 'wOBA', 'wRC+'],
+  Index(['index', 'Name', 'Team', 'G', 'PA', 'AB', 'H', '2B', '3B', 'HR', 'R',
+         'RBI', 'BB', 'SO', 'HBP', 'SB', 'CS', '-1', 'AVG', 'OBP', 'SLG', 'OPS',
+         'wOBA', '-1.1', 'wRC+', 'BsR', 'Fld', '-1.2', 'Off', 'Def', 'WAR',
+         'playerid'],
        dtype='object')
   >>> df
-      G   AB   PA   H  1B  2B  3B  HR   R  RBI  BB  ...    OPS    ISO  Spd  BABIP  UBR  wGDP  wSB  wRC  wRAA   wOBA  wRC+
-  0  88  323  363  79  42  13   0  24  49   64  34  ...  0.834  0.263  2.3   0.28  0.0   NaN -0.2   54   8.9  0.347   120
+  index         Name       Team   G   PA   AB   H  ...  BsR  Fld  -1.2  Off  Def  WAR  playerid
+     60  Khris Davis  Athletics  56  242  214  53  ... -0.7 -0.1   NaN  4.8 -5.9  0.7      9112
 
-  [1 rows x 36 columns]
-  >>> player_id = Lookup.from_names(['Hyun-Jin Ryu']).iloc[0].fg_id
-  >>> fg = fangraphs.Scraper(player_id=player_id)
-  >>> df = fg.scrape(instance='ZiPS')
-  >>> df.columns
-  Index(['W', 'L', 'ERA', 'G', 'GS', 'CG', 'ShO', 'SV', 'HLD', 'BS', 'IP', 'TBF',
-       'H', 'R', 'ER', 'HR', 'BB', 'IBB', 'HBP', 'WP', 'BK', 'SO', 'K/9',
-       'BB/9', 'K/BB', 'HR/9', 'K%', 'BB%', 'K-BB%', 'AVG', 'WHIP', 'BABIP',
-       'LOB%', 'ERA-', 'FIP-', 'FIP'],
-      dtype='object')
-  >>> df
-     W  L   ERA   G  GS  CG  ShO  SV  HLD  BS    IP  ...  HR/9  K%  BB%  K-BB%    AVG  WHIP  BABIP   LOB%  ERA-  FIP-   FIP
-  0  6  5  3.89  17  17 NaN  NaN   0  NaN NaN  88.0  ...  1.43 NaN  NaN    NaN  0.264  1.25  0.311  0.763   NaN   NaN  4.15
-
-  [1 rows x 36 columns]
+  [1 rows x 32 columns]
 
 
 Game-by-Game Results and Schedule 
