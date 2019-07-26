@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='baseball_scraper',
-    version='0.1.1',
+    version='0.1.2',
     description='Retrieve baseball data in Python',
     long_description=long_description,
     url='https://github.com/spilchen/baseball_scraper',
@@ -36,7 +36,8 @@ setup(
                       'pandas >= 0.20.2',
                       'beautifulsoup4>=4.4.0',
                       'requests>=2.18.1',
-                      'lxml>=4.2.1'
+                      'lxml>=4.2.1',
+                      'selenium>=3.141.0',
                       ],
     include_package_data=True,
 )
