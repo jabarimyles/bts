@@ -21,6 +21,13 @@ def test_scrape_hitter(fg):
     assert(math.isclose(df['AVG'][0], 0.298))
 
 
+def test_scrape_pitcher(fg):
+    df = fg.scrape_pitcher(3137)
+    print(df)
+    assert(df['W'][0] == 6)
+    assert(df['SO'][0] == 103)
+    assert(math.isclose(df['ERA'][0], 3.04))
+
 def test_scrape_multi(fg):
     df = fg.scrape_hitter("13590")
     assert(df.Name[0] == "Jesse Winker")

@@ -21,8 +21,8 @@ class Scraper:
     """
     def __init__(self, instance):
         instance_uri = self._get_instance_uri(instance)
-        self.hitting_scraper = ScraperGeneral(self._uri(instance_uri, True))
-        self.pitching_scraper = ScraperGeneral(self._uri(instance_uri, False))
+        self.hitting_scraper = ScraperGeneral(self._uri(instance_uri, "bat"))
+        self.pitching_scraper = ScraperGeneral(self._uri(instance_uri, "pit"))
 
     def scrape_hitter(self, player_id):
         """Generate a DataFrame of the stats that we pull from fangraphs.com
@@ -61,8 +61,9 @@ class Scraper:
 
     def load_fake_cache(self):
         self.hitting_scraper.load_fake_cache(
-            'sample.fangraphs.leaderboard.csv')
-        # TODO load pitching stats
+            'sample.fangraphs.hitter_leaderboard.csv')
+        self.pitching_scraper.load_fake_cache(
+            'sample.fangraphs.pitcher_leaderboard.csv')
 
     def _get_instance_uri(self, instance):
         if instance not in self.instance_map:
@@ -70,9 +71,9 @@ class Scraper:
                                "instances() to see available ones.")
         return self.instance_map[instance]
 
-    def _uri(self, instance_uri, hitting_stat):
+    def _uri(self, instance_uri, stat_type):
         return "https://www.fangraphs.com/projections.aspx?" + \
-            "pos=all&stats=bat&type={}".format(instance_uri)
+            "pos=all&stats={}&type={}".format(stat_type, instance_uri)
 
 
 class ScraperGeneral:

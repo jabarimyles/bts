@@ -177,7 +177,7 @@ Note, due to the use of JavaScript on that site, we use Chrome through selenium 
   >>> fangraphs.Scraper.instances()
   ['Steamer (RoS)', 'Steamer (Update)', 'ZiPS (Update)', 'Steamer600 (Update)', 'Depth Charts (RoS)', 'THE BAT (RoS)']
   >>> fg = fangraphs.Scraper("Steamer (RoS)")
-  >>> df = fg.scrape(player_id)
+  >>> df = fg.scrape_hitter(player_id)
   >>> df.columns
   Index(['index', 'Name', 'Team', 'G', 'PA', 'AB', 'H', '2B', '3B', 'HR', 'R',
          'RBI', 'BB', 'SO', 'HBP', 'SB', 'CS', '-1', 'AVG', 'OBP', 'SLG', 'OPS',
@@ -189,6 +189,18 @@ Note, due to the use of JavaScript on that site, we use Chrome through selenium 
      60  Khris Davis  Athletics  56  242  214  53  ... -0.7 -0.1   NaN  4.8 -5.9  0.7      9112
 
   [1 rows x 32 columns]
+  >>> player_id = Lookup.from_names(['Max Scherzer']).iloc[0].fg_id
+  >>> df = fg.scrape_pitcher(player_id)
+  >>> df.columns
+  Index(['index', 'Name', 'Team', 'W', 'L', 'ERA', 'GS', 'G', 'SV', 'IP', 'H',
+         'ER', 'HR', 'SO', 'BB', 'WHIP', 'K/9', 'BB/9', 'FIP', 'WAR', 'RA9-WAR',
+         'playerid'],
+       dtype='object')
+  >>> df
+  index          Name       Team  W  L   ERA  ...    K/9  BB/9   FIP  WAR  RA9-WAR  playerid
+  0      5  Max Scherzer  Nationals  6  3  3.04  ...  12.36  2.13  2.93  2.2      2.4      3137
+
+  [1 rows x 22 columns]
 
 
 Game-by-Game Results and Schedule 
