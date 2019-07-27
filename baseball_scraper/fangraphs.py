@@ -12,30 +12,32 @@ class Scraper:
                     "Steamer600 (Update)": "steamer600u",
                     "Depth Charts (RoS)": "rfangraphsdc",
                     "THE BAT (RoS)": "rthebat"}
-    download_file = "FanGraphs Leaderboard.csv"
 
-    """Pulls baseball stats for a single player from fangraphs.com
+    """Pulls baseball stats from fangraphs.com
 
     :param instance: What data source we are going to pull from.  See
     instances() for a list of available names.
     :type instance: str
     """
     def __init__(self, instance):
-        self._set_instance_uri(instance)
-        self.df_source = None  # File name to read the csv data from
-        self.df = None
-        self.dlr = selenium_helper.Downloader(self._uri(), self.download_file)
+        instance_uri = self._get_instance_uri(instance)
+        self.hitting_scraper = ScraperGeneral(self._uri(instance_uri, True))
+        self.pitching_scraper = ScraperGeneral(self._uri(instance_uri, False))
 
-    def __getstate__(self):
-        return (self.instance_uri, self.df)
+    def scrape_hitter(self, player_id):
+        """Generate a DataFrame of the stats that we pull from fangraphs.com
 
-    def __setstate__(self, state):
-        (self.instance_uri, self.df) = state
-        self.df_source = None
-        self.dlr = selenium_helper.Downloader(self._uri(), self.download_file)
+        :param player_id: FanGraphs ID of the player you want to scrape.  This
+        is a player ID for a hitter.
+        :type player_id: str
+        :return: panda DataFrame of stat categories for the player.  Returns an
+           empty DataFrame if projection system is not found.
+        :rtype: DataFrame
+        """
+        return self.hitting_scraper.scrape(player_id)
 
-    def scrape(self, player_id):
-        """Generate a DataFrame of the stats that we pulled from fangraphs.com
+    def scrape_pitcher(self, player_id):
+        """Generate a DataFrame of the stats that we pull from fangraphs.com
 
         :param player_id: FanGraphs ID of the player you want to scrape.
         :type player_id: str
@@ -43,11 +45,7 @@ class Scraper:
            empty DataFrame if projection system is not found.
         :rtype: DataFrame
         """
-        self._cache_source()
-        if str(self.df.playerid.dtype) == "int64":
-            return self.df[self.df.playerid == int(player_id)].reset_index()
-        else:
-            return self.df[self.df.playerid == str(player_id)].reset_index()
+        return self.pitching_scraper.scrape(player_id)
 
     @classmethod
     def instances(cls):
@@ -61,28 +59,72 @@ class Scraper:
         """
         return cls.instance_map.keys()
 
+    def load_fake_cache(self):
+        self.hitting_scraper.load_fake_cache(
+            'sample.fangraphs.leaderboard.csv')
+        # TODO load pitching stats
+
+    def _get_instance_uri(self, instance):
+        if instance not in self.instance_map:
+            raise RuntimeError("The instance given is not a valid one.  Use " +
+                               "instances() to see available ones.")
+        return self.instance_map[instance]
+
+    def _uri(self, instance_uri, hitting_stat):
+        return "https://www.fangraphs.com/projections.aspx?" + \
+            "pos=all&stats=bat&type={}".format(instance_uri)
+
+
+class ScraperGeneral:
+    download_file = "FanGraphs Leaderboard.csv"
+
+    """Pulls baseball stats for a single player from fangraphs.com
+
+    :param uri: The URI to download the stats from
+    :type uri: str
+    """
+    def __init__(self, uri):
+        self.uri = uri
+        self.df_source = None  # File name to read the csv data from
+        self.df = None
+        self.dlr = selenium_helper.Downloader(self.uri, self.download_file)
+
+    def __getstate__(self):
+        return (self.uri, self.df)
+
+    def __setstate__(self, state):
+        (self.uri, self.df) = state
+        self.df_source = None
+        self.dlr = selenium_helper.Downloader(self.uri, self.download_file)
+
+    def scrape(self, player_id, hitting_stat=True):
+        """Generate a DataFrame of the stats that we pulled from fangraphs.com
+
+        :param player_id: FanGraphs ID of the player you want to scrape.
+        :type player_id: str
+        :param hitting_stat: True if scraping a hitting state.  False implies a
+        pitching stat.
+        :return: panda DataFrame of stat categories for the player.  Returns an
+           empty DataFrame if projection system is not found.
+        :rtype: DataFrame
+        """
+        self._cache_source()
+        if str(self.df.playerid.dtype) == "int64":
+            return self.df[self.df.playerid == int(player_id)].reset_index()
+        else:
+            return self.df[self.df.playerid == str(player_id)].reset_index()
+
     def set_source(self, s):
         self.df_source = s
 
     def save_source(self, f):
         shutil.copy(self.dlr.downloaded_file(), f)
 
-    def load_fake_cache(self):
-        sample_file = 'sample.fangraphs.leaderboard.csv'
+    def load_fake_cache(self, sample_file):
         with pkg_resources.open_binary('baseball_scraper', sample_file) as fo:
             self.df = None
             self.df_source = fo
             self._cache_source()
-
-    def _set_instance_uri(self, instance):
-        if instance not in self.instance_map:
-            raise RuntimeError("The instance given is not a valid one.  Use " +
-                               "instances() to see available ones.")
-        self.instance_uri = self.instance_map[instance]
-
-    def _uri(self):
-        return "https://www.fangraphs.com/projections.aspx?" + \
-            "pos=all&stats=bat&type={}".format(self.instance_uri)
 
     def _cache_source(self):
         if self.df is None:

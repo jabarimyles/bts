@@ -12,8 +12,8 @@ def test_instances():
     assert('Steamer (RoS)' in avail)
 
 
-def test_scrape(fg):
-    df = fg.scrape(13611)
+def test_scrape_hitter(fg):
+    df = fg.scrape_hitter(13611)
     print(df)
     assert(df['HR'][0] == 11)
     assert(df['RBI'][0] == 35)
@@ -22,7 +22,7 @@ def test_scrape(fg):
 
 
 def test_scrape_multi(fg):
-    df = fg.scrape("13590")
+    df = fg.scrape_hitter("13590")
     assert(df.Name[0] == "Jesse Winker")
-    df = fg.scrape("13611")
+    df = fg.scrape_hitter("13611")
     assert(df.Name[0] == "Mookie Betts")
