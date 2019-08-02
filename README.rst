@@ -177,7 +177,7 @@ Note, due to the use of JavaScript on that site, we use Chrome through selenium 
   >>> fangraphs.Scraper.instances()
   ['Steamer (RoS)', 'Steamer (Update)', 'ZiPS (Update)', 'Steamer600 (Update)', 'Depth Charts (RoS)', 'THE BAT (RoS)']
   >>> fg = fangraphs.Scraper("Steamer (RoS)")
-  >>> df = fg.scrape_hitter(player_id)
+  >>> df = fg.scrape(player_id, scrape_as=fangraphs.ScrapeType.HITTER)
   >>> df.columns
   Index(['index', 'Name', 'Team', 'G', 'PA', 'AB', 'H', '2B', '3B', 'HR', 'R',
          'RBI', 'BB', 'SO', 'HBP', 'SB', 'CS', '-1', 'AVG', 'OBP', 'SLG', 'OPS',
@@ -190,7 +190,7 @@ Note, due to the use of JavaScript on that site, we use Chrome through selenium 
 
   [1 rows x 32 columns]
   >>> player_id = Lookup.from_names(['Max Scherzer']).iloc[0].fg_id
-  >>> df = fg.scrape_pitcher(player_id)
+  >>> df = fg.scrape(player_id, scrape_as=fangraphs.ScrapeType.PITCHER)
   >>> df.columns
   Index(['index', 'Name', 'Team', 'W', 'L', 'ERA', 'GS', 'G', 'SV', 'IP', 'H',
          'ER', 'HR', 'SO', 'BB', 'WHIP', 'K/9', 'BB/9', 'FIP', 'WAR', 'RA9-WAR',

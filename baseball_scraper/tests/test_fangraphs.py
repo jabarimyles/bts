@@ -13,7 +13,7 @@ def test_instances():
 
 
 def test_scrape_hitter(fg):
-    df = fg.scrape_hitter(13611)
+    df = fg.scrape(13611, scrape_as=fangraphs.ScrapeType.HITTER)
     print(df)
     assert(df['HR'][0] == 11)
     assert(df['RBI'][0] == 35)
@@ -22,7 +22,7 @@ def test_scrape_hitter(fg):
 
 
 def test_scrape_pitcher(fg):
-    df = fg.scrape_pitcher(3137)
+    df = fg.scrape(3137, scrape_as=fangraphs.ScrapeType.PITCHER)
     print(df)
     assert(df['W'][0] == 6)
     assert(df['SO'][0] == 103)
@@ -30,21 +30,21 @@ def test_scrape_pitcher(fg):
 
 
 def test_scrape_multi(fg):
-    df = fg.scrape_hitter("13590")
+    df = fg.scrape("13590", scrape_as=fangraphs.ScrapeType.HITTER)
     assert(df.Name[0] == "Jesse Winker")
-    df = fg.scrape_hitter("13611")
+    df = fg.scrape("13611", scrape_as=fangraphs.ScrapeType.HITTER)
     assert(df.Name[0] == "Mookie Betts")
 
 
 def test_scrape_hitters_by_player_name(fg):
-    df = fg.scrape_hitter("Jesse Winker", id_name="Name")
+    df = fg.scrape("Jesse Winker", id_name="Name")
     print(len(df.index))
     assert(df.Name[0] == "Jesse Winker")
     assert(df.playerid[0] == "13590")
 
 
 def test_scrape_hitters_by_team(fg):
-    df = fg.scrape_hitter("Blue Jays", id_name="Team")
+    df = fg.scrape("Blue Jays", id_name="Team")
     print(len(df.index))
     for name in ["Vladimir Guerrero Jr.", "Justin Smoak",
                  "Lourdes Gurriel Jr."]:
@@ -53,7 +53,8 @@ def test_scrape_hitters_by_team(fg):
 
 
 def test_scrape_pitchers_by_player_name(fg):
-    df = fg.scrape_pitcher("Steve Cishek", id_name="Name")
+    df = fg.scrape("Steve Cishek", id_name="Name",
+                   scrape_as=fangraphs.ScrapeType.PITCHER)
     print(len(df.index))
     print(df)
     assert(df.Name[0] == "Steve Cishek")
@@ -61,7 +62,8 @@ def test_scrape_pitchers_by_player_name(fg):
 
 
 def test_scrape_pitchers_by_team(fg):
-    df = fg.scrape_pitcher("Dodgers", id_name="Team")
+    df = fg.scrape("Dodgers", id_name="Team",
+                   scrape_as=fangraphs.ScrapeType.PITCHER)
     print(len(df.index))
     for name in ["Hyun-Jin Ryu", "Clayton Kershaw", "Walker Buehler"]:
         plyr = df[df.Name == name]

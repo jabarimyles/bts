@@ -3,6 +3,12 @@ import pandas as pd
 import importlib.resources as pkg_resources
 from selenium.webdriver.common.by import By
 from baseball_scraper import selenium_helper
+from enum import Enum, auto
+
+
+class ScrapeType(Enum):
+    HITTER = auto()
+    PITCHER = auto()
 
 
 class Scraper:
@@ -24,7 +30,7 @@ class Scraper:
         self.hitting_scraper = ScraperGeneral(self._uri(instance_uri, "bat"))
         self.pitching_scraper = ScraperGeneral(self._uri(instance_uri, "pit"))
 
-    def scrape_hitter(self, id, id_name="playerid"):
+    def scrape(self, id, id_name="playerid", scrape_as=ScrapeType.HITTER):
         """Generate a DataFrame of the stats that we pull from fangraphs.com
 
         :param id: The lookup value.  If id_name is 'player_id' this would be
@@ -33,26 +39,18 @@ class Scraper:
         :param id_name: Name of the ID to lookup.  Set this to 'player_id' if
         your id is the FanGraphs ID.  Other options include: Name, Team.
         :type name: str
+        :param scrape_as: Identity what to scrape a hitter or pitcher
+        :type scrape_as: ScrapeType
         :return: panda DataFrame of stat categories for the players.  Returns
           an empty DataFrame if nothing was found
         :rtype: DataFrame
         """
-        return self.hitting_scraper.scrape(id, id_name)
-
-    def scrape_pitcher(self, id, id_name="playerid"):
-        """Generate a DataFrame of the stats that we pull from fangraphs.com
-
-        :param id: The lookup value.  If id_name is 'player_id' this would be
-        the FanGraphs ID of the player you want to scrape.
-        :type player_id: str
-        :param id_name: Name of the ID to lookup.  Set this to 'player_id' if
-        your id is the FanGraphs ID.  Other options include: Name, Team.
-        :type name: str
-        :return: panda DataFrame of stat categories for the players.  Returns
-          an empty DataFrame if nothing was found
-        :rtype: DataFrame
-        """
-        return self.pitching_scraper.scrape(id, id_name)
+        if scrape_as == ScrapeType.HITTER:
+            return self.hitting_scraper.scrape(id, id_name)
+        elif scrape_as == ScrapeType.PITCHER:
+            return self.pitching_scraper.scrape(id, id_name)
+        else:
+            raise RuntimeError("Unknown scrape type: {}".format(scrape_as))
 
     @classmethod
     def instances(cls):
