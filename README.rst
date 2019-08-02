@@ -216,9 +216,9 @@ If the season argument is set to the current season, the query returns results f
 
   >>> # Example: Let's take a look at the individual-game results of the 1927 Yankees
   >>> from baseball_scraper import baseball_reference
-  >>> s = baseball_reference.TeamScraper('NYY')
+  >>> s = baseball_reference.TeamScraper()
   >>> s.set_season(1927)
-  >>> data = s.scrape()
+  >>> data = s.scrape('NYY')
   >>> data.head()
                   Date   Tm Home_Away  Opp W/L     R   RA   Inn  W-L  Rank  \
   1    Tuesday, Apr 12  NYY      Home  PHA   W   8.0  3.0   9.0  1-0   1.0
@@ -235,9 +235,9 @@ If the season argument is set to the current season, the query returns results f
   5  up 1.0  Shocker  Ruffing  None  2:05   D     25000.0       4
 
   >>> # Let get the games a team plays in a given week.
-  >>> s = baseball_reference.TeamScraper('TOR')
+  >>> import datetime as dt
   >>> s.set_date_range(dt.datetime(2019,6,2), dt.datetime(2019,6,8))
-  >>> df = s.scrape()
+  >>> df = s.scrape('TOR')
   >>> df.head()
 
            Date   Tm Home_Away  Opp W/L     R  ...     Save  Time D/N  Attendance Streak Orig. Scheduled

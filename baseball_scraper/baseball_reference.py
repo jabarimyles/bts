@@ -6,13 +6,9 @@ import datetime as dt
 
 
 class TeamScraper:
-    """Pulls team results for a particular date range
-
-    :param team: Team abbreviation to lookup
-    :type team: str
-    """
-    def __init__(self, team):
-        self.team = team.upper()
+    """Pulls team results for a particular date range"""
+    def __init__(self):
+        self.team = None
         self.start_date = None
         self.end_date = None
         self.season_raw_cache = {}
@@ -24,11 +20,6 @@ class TeamScraper:
     def __setstate__(self, state):
         (self.team, self.start_date, self.end_date, self.season_cache) = state
         self.season_raw_cache = {}
-
-    def set_team(self, team):
-        """Set the team to scrape
-        """
-        self.team = team.upper()
 
     def set_season(self, season):
         """Set the season to scrape
@@ -53,26 +44,32 @@ class TeamScraper:
         self.start_date = pd.Timestamp(start_date)
         self.end_date = pd.Timestamp(end_date)
 
-    def scrape(self):
+    def scrape(self, team):
         """Scrape the results for a team given a date range
 
+        :param team: The abbreviation of the team to scrape
+        :type team: str
         :return: Rows of games for the given date over the date range
-        :rtype: panda DataFrame
+        :rtype: pandas.DataFrame
         """
+        self.team = team.upper()
         self._validate_date_range(self.start_date, self.end_date)
         self._validate_team()
         self._cache_source()
-        df = self.season_cache[self.start_date.year]
+        df = self.season_cache[self.team][self.start_date.year]
         return self._apply_filters(df)
 
-    def set_source(self, s):
+    def set_source(self, team, s):
         self._validate_date_range(self.start_date, self.end_date)
-        self.season_raw_cache[self.start_date.year] = s
+        if team not in self.season_raw_cache:
+            self.season_raw_cache[team] = {}
+        self.season_raw_cache[team][self.start_date.year] = s
 
-    def save_source(self, f):
-        assert(self.start_date.year in self.season_raw_cache)
+    def save_source(self, team, f):
+        assert(team in self.season_raw_cache)
+        assert(self.start_date.year in self.season_raw_cache[team])
         with open(f, "w") as fo:
-            fo.write(str(self.season_raw_cache[self.start_date.year]))
+            fo.write(str(self.season_raw_cache[team][self.start_date.year]))
 
     def _validate_date_range(self, st, ed):
         if st is None:
@@ -97,15 +94,22 @@ class TeamScraper:
 
     def _cache_source(self):
         yr = self.start_date.year
-        if yr not in self.season_cache:
-            if yr not in self.season_raw_cache:
+        if self.team not in self.season_cache or \
+                yr not in self.season_cache[self.team]:
+            if self.team not in self.season_raw_cache or \
+                    yr not in self.season_raw_cache[self.team]:
                 self._soup()
-            soup = self.season_raw_cache[yr]
-            self.season_cache[yr] = self._parse_raw(soup)
+            soup = self.season_raw_cache[self.team][yr]
+            if self.team not in self.season_cache:
+                self.season_cache[self.team] = {}
+            self.season_cache[self.team][yr] = self._parse_raw(soup)
 
     def _soup(self):
         s = requests.get(self._uri()).content
-        self.season_raw_cache[self.start_date.year] = BeautifulSoup(s, "lxml")
+        if self.team not in self.season_raw_cache:
+            self.season_raw_cache[self.team] = {}
+        self.season_raw_cache[self.team][self.start_date.year] = \
+            BeautifulSoup(s, "lxml")
 
     def _parse_raw(self, soup):
         table = self._get_table(soup)
