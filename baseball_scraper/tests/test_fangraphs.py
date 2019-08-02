@@ -30,10 +30,10 @@ def test_scrape_pitcher(fg):
 
 
 def test_scrape_multi(fg):
-    df = fg.scrape("13590", scrape_as=fangraphs.ScrapeType.HITTER)
-    assert(df.Name[0] == "Jesse Winker")
-    df = fg.scrape("13611", scrape_as=fangraphs.ScrapeType.HITTER)
+    df = fg.scrape(["13590", "13611"], scrape_as=fangraphs.ScrapeType.HITTER)
+    assert(len(df.index) == 2)
     assert(df.Name[0] == "Mookie Betts")
+    assert(df.Name[1] == "Jesse Winker")
 
 
 def test_scrape_hitters_by_player_name(fg):

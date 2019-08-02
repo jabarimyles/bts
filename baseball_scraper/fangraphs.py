@@ -33,9 +33,10 @@ class Scraper:
     def scrape(self, id, id_name="playerid", scrape_as=ScrapeType.HITTER):
         """Generate a DataFrame of the stats that we pull from fangraphs.com
 
-        :param id: The lookup value.  If id_name is 'player_id' this would be
-        the FanGraphs ID of the player you want to scrape.
-        :type player_id: str
+        :param ids: The lookup value(s).  If id_name is 'player_id' this would
+        be the FanGraphs ID of the player you want to scrape.  You can pass in
+        a single ID or a list of IDs.
+        :type player_id: str or list(str)
         :param id_name: Name of the ID to lookup.  Set this to 'player_id' if
         your id is the FanGraphs ID.  Other options include: Name, Team.
         :type name: str
@@ -103,24 +104,28 @@ class ScraperGeneral:
         self.df_source = None
         self.dlr = selenium_helper.Downloader(self.uri, self.download_file)
 
-    def scrape(self, id, id_name):
+    def scrape(self, ids, id_name):
         """Generate a DataFrame of the stats that we pulled from fangraphs.com
 
-        :param id: The lookup value.  If id_name is 'player_id' this would be
-        the FanGraphs ID of the player you want to scrape.
-        :type player_id: str
+        :param ids: The lookup value(s).  If id_name is 'player_id' this would
+        be the FanGraphs ID of the player you want to scrape.  You can pass in
+        a single ID or a list of IDs.
+        :type player_id: str or list(str)
         :param id_name: Name of the ID to lookup.  Set this to 'player_id' if
         your id is the FanGraphs ID.  Other options include: name, team.
         :type name: str
-        :return: panda DataFrame of stat categories for the lookup.  Returns an
-           empty DataFrame if lookup did not find anything.
+        :return: panda DataFrame of stat categories for the lookup values.
+        Returns an empty DataFrame if lookup did not find anything.
         :rtype: DataFrame
         """
         self._cache_source()
-        if str(self.df[id_name].dtype) == "int64":
-            return self.df[self.df[id_name] == int(id)].reset_index()
+        if isinstance(ids, list):
+            return self.df[self.df[id_name].isin(ids)].reset_index()
         else:
-            return self.df[self.df[id_name] == str(id)].reset_index()
+            if str(self.df[id_name].dtype) == "int64":
+                return self.df[self.df[id_name] == int(ids)].reset_index()
+            else:
+                return self.df[self.df[id_name] == str(ids)].reset_index()
 
     def set_source(self, s):
         self.df_source = s
