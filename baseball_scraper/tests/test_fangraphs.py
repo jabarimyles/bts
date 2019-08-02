@@ -28,8 +28,41 @@ def test_scrape_pitcher(fg):
     assert(df['SO'][0] == 103)
     assert(math.isclose(df['ERA'][0], 3.04))
 
+
 def test_scrape_multi(fg):
     df = fg.scrape_hitter("13590")
     assert(df.Name[0] == "Jesse Winker")
     df = fg.scrape_hitter("13611")
     assert(df.Name[0] == "Mookie Betts")
+
+
+def test_scrape_hitters_by_player_name(fg):
+    df = fg.scrape_hitter("Jesse Winker", id_name="Name")
+    print(len(df.index))
+    assert(df.Name[0] == "Jesse Winker")
+    assert(df.playerid[0] == "13590")
+
+
+def test_scrape_hitters_by_team(fg):
+    df = fg.scrape_hitter("Blue Jays", id_name="Team")
+    print(len(df.index))
+    for name in ["Vladimir Guerrero Jr.", "Justin Smoak",
+                 "Lourdes Gurriel Jr."]:
+        plyr = df[df.Name == name]
+        assert(len(plyr.index) == 1)
+
+
+def test_scrape_pitchers_by_player_name(fg):
+    df = fg.scrape_pitcher("Steve Cishek", id_name="Name")
+    print(len(df.index))
+    print(df)
+    assert(df.Name[0] == "Steve Cishek")
+    assert(df.playerid[0] == "6483")
+
+
+def test_scrape_pitchers_by_team(fg):
+    df = fg.scrape_pitcher("Dodgers", id_name="Team")
+    print(len(df.index))
+    for name in ["Hyun-Jin Ryu", "Clayton Kershaw", "Walker Buehler"]:
+        plyr = df[df.Name == name]
+        assert(len(plyr.index) == 1)

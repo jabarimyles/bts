@@ -24,28 +24,35 @@ class Scraper:
         self.hitting_scraper = ScraperGeneral(self._uri(instance_uri, "bat"))
         self.pitching_scraper = ScraperGeneral(self._uri(instance_uri, "pit"))
 
-    def scrape_hitter(self, player_id):
+    def scrape_hitter(self, id, id_name="playerid"):
         """Generate a DataFrame of the stats that we pull from fangraphs.com
 
-        :param player_id: FanGraphs ID of the player you want to scrape.  This
-        is a player ID for a hitter.
+        :param id: The lookup value.  If id_name is 'player_id' this would be
+        the FanGraphs ID of the player you want to scrape.
         :type player_id: str
-        :return: panda DataFrame of stat categories for the player.  Returns an
-           empty DataFrame if projection system is not found.
+        :param id_name: Name of the ID to lookup.  Set this to 'player_id' if
+        your id is the FanGraphs ID.  Other options include: Name, Team.
+        :type name: str
+        :return: panda DataFrame of stat categories for the players.  Returns
+          an empty DataFrame if nothing was found
         :rtype: DataFrame
         """
-        return self.hitting_scraper.scrape(player_id)
+        return self.hitting_scraper.scrape(id, id_name)
 
-    def scrape_pitcher(self, player_id):
+    def scrape_pitcher(self, id, id_name="playerid"):
         """Generate a DataFrame of the stats that we pull from fangraphs.com
 
-        :param player_id: FanGraphs ID of the player you want to scrape.
+        :param id: The lookup value.  If id_name is 'player_id' this would be
+        the FanGraphs ID of the player you want to scrape.
         :type player_id: str
-        :return: panda DataFrame of stat categories for the player.  Returns an
-           empty DataFrame if projection system is not found.
+        :param id_name: Name of the ID to lookup.  Set this to 'player_id' if
+        your id is the FanGraphs ID.  Other options include: Name, Team.
+        :type name: str
+        :return: panda DataFrame of stat categories for the players.  Returns
+          an empty DataFrame if nothing was found
         :rtype: DataFrame
         """
-        return self.pitching_scraper.scrape(player_id)
+        return self.pitching_scraper.scrape(id, id_name)
 
     @classmethod
     def instances(cls):
@@ -98,22 +105,24 @@ class ScraperGeneral:
         self.df_source = None
         self.dlr = selenium_helper.Downloader(self.uri, self.download_file)
 
-    def scrape(self, player_id, hitting_stat=True):
+    def scrape(self, id, id_name):
         """Generate a DataFrame of the stats that we pulled from fangraphs.com
 
-        :param player_id: FanGraphs ID of the player you want to scrape.
+        :param id: The lookup value.  If id_name is 'player_id' this would be
+        the FanGraphs ID of the player you want to scrape.
         :type player_id: str
-        :param hitting_stat: True if scraping a hitting state.  False implies a
-        pitching stat.
-        :return: panda DataFrame of stat categories for the player.  Returns an
-           empty DataFrame if projection system is not found.
+        :param id_name: Name of the ID to lookup.  Set this to 'player_id' if
+        your id is the FanGraphs ID.  Other options include: name, team.
+        :type name: str
+        :return: panda DataFrame of stat categories for the lookup.  Returns an
+           empty DataFrame if lookup did not find anything.
         :rtype: DataFrame
         """
         self._cache_source()
-        if str(self.df.playerid.dtype) == "int64":
-            return self.df[self.df.playerid == int(player_id)].reset_index()
+        if str(self.df[id_name].dtype) == "int64":
+            return self.df[self.df[id_name] == int(id)].reset_index()
         else:
-            return self.df[self.df.playerid == str(player_id)].reset_index()
+            return self.df[self.df[id_name] == str(id)].reset_index()
 
     def set_source(self, s):
         self.df_source = s
