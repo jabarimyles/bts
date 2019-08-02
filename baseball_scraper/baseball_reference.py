@@ -16,6 +16,14 @@ class TeamScraper:
         self.start_date = None
         self.end_date = None
         self.season_raw_cache = {}
+        self.season_cache = {}
+
+    def __getstate__(self):
+        return (self.team, self.start_date, self.end_date, self.season_cache)
+
+    def __setstate__(self, state):
+        (self.team, self.start_date, self.end_date, self.season_cache) = state
+        self.season_raw_cache = {}
 
     def set_team(self, team):
         """Set the team to scrape
@@ -54,8 +62,7 @@ class TeamScraper:
         self._validate_date_range(self.start_date, self.end_date)
         self._validate_team()
         self._cache_source()
-        soup = self.season_raw_cache[self.start_date.year]
-        df = self._parse_raw(soup)
+        df = self.season_cache[self.start_date.year]
         return self._apply_filters(df)
 
     def set_source(self, s):
@@ -89,8 +96,12 @@ class TeamScraper:
                                                        self.start_date.year)
 
     def _cache_source(self):
-        if self.start_date.year not in self.season_raw_cache:
-            self._soup()
+        yr = self.start_date.year
+        if yr not in self.season_cache:
+            if yr not in self.season_raw_cache:
+                self._soup()
+            soup = self.season_raw_cache[yr]
+            self.season_cache[yr] = self._parse_raw(soup)
 
     def _soup(self):
         s = requests.get(self._uri()).content
