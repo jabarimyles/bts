@@ -271,6 +271,71 @@ This function returns a list of dataframes. Each dataframe is the standings for 
   5      Cincinnati Reds   68  94  .420  35.5
 
 
+ESPN
+----
+
+With the ESPN scraper you can pull probable starters for a given date range.  This can be useful to see the two-start pitchers for a given week and their team matchups.
+
+::
+
+  >>> from baseball_scraper import espn
+  >>> from datetime import datetime
+  >>> es = espn.ProbableStartersScraper(datetime(2019,8,5), datetime(2019,8,11))
+  >>> df = es.scrape()
+  >>> df.head(10)
+          Date              Name  espn_id opponent
+  0 2019-08-05   Sandy Alcantara    35241      NYM
+  1 2019-08-05      Jacob deGrom    32796      MIA
+  2 2019-08-05      Jordan Lyles    31061      PIT
+  3 2019-08-05     Dario Agrazal    39813      MIL
+  4 2019-08-05   Masahiro Tanaka    33150      BAL
+  5 2019-08-05      Gabriel Ynoa    33651      NYY
+  6 2019-08-05     Lucas Giolito    32697      DET
+  7 2019-08-05  Spencer Turnbull    33732      CHW
+  8 2019-08-05   Mike Montgomery    31092      BOS
+  9 2019-08-05     Rick Porcello    29966       KC
+  >>> df[df.duplicated(['espn_id'])].Name
+  127     Masahiro Tanaka
+  128    Jacob Waguespack
+  130       Rick Porcello
+  131     Vince Velasquez
+  132     Jeff Samardzija
+  133     Mike Montgomery
+  134    Spencer Turnbull
+  135         Mike Soroka
+  136     Sandy Alcantara
+  139       Jake Odorizzi
+  146      Kyle Hendricks
+  153      Charlie Morton
+  155      Andrew Cashner
+  157      Trent Thornton
+  158         Jakob Junis
+  159       Daniel Norris
+  160        Jacob deGrom
+  161           Max Fried
+  162     Jordan Yamamoto
+  163          Jon Lester
+  164       Luis Castillo
+  165       Chris Bassitt
+  166       Lucas Giolito
+  167          Mike Minor
+  168        Jordan Lyles
+  169         Zach Plesac
+  170        Jose Berrios
+  171       Dario Agrazal
+  172       Michael Wacha
+  173      German Marquez
+  174      Dinelson Lamet
+  175       Merrill Kelly
+  176        Wade LeBlanc
+  177        Jake Arrieta
+  Name: Name, dtype: object
+  >>> df[df.Name == "Charlie Morton"]
+            Date            Name  espn_id opponent
+  15  2019-08-05  Charlie Morton    29155      TOR
+  153 2019-08-10  Charlie Morton    29155      SEA
+
+
 Complete Documentation
 ----------------------
 

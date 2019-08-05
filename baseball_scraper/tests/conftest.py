@@ -1,9 +1,10 @@
 #!/bin/python
 
 import pytest
-from baseball_scraper import fangraphs, baseball_reference
+from baseball_scraper import fangraphs, baseball_reference, espn
 import os
 from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
 
 
 @pytest.fixture()
@@ -39,3 +40,18 @@ def bref_team():
         br.set_source('NYY', src)
 
     yield br
+
+
+@pytest.fixture(scope="module")
+def espn_probable_starters():
+    start_date = datetime(2019, 8, 7)
+    end_date = start_date + timedelta(1)
+    es = espn.ProbableStartersScraper(start_date, end_date)
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    for day in [start_date, end_date]:
+        day_s = day.strftime("%b%d")
+        fn = dir_path + "/sample.espn.probable_starters.{}.xml".format(day_s)
+        with open(fn, "r") as f:
+            src = BeautifulSoup(f, "lxml")
+            es.set_source(day, src)
+    yield es
