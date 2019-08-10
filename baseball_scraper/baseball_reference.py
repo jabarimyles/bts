@@ -3,7 +3,6 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import datetime as dt
-import re
 
 
 class TeamScraper:
@@ -279,83 +278,95 @@ class TeamScraper:
         return df
 
 
-class TeamListScraper:
-    """A scraper that gets returns a list of all of the active teams
+class TeamSummaryScraper:
+    """A scraper that retrieves a summary of all of the baseball teams
 
     >>> from baseball_scraper import baseball_reference
-    >>> tls = baseball_reference.TeamListScraper()
-    >>> df = tls.scrape()
+    >>> tss = baseball_reference.TeamSummaryScraper()
+    >>> df = tss.scrape(2019)
     >>> df.columns
-    Index([u'Franchise', u'abbrev'], dtype='object')
-    """
+    Index([u'Franchise',        u'Tm',      u'#Bat',    u'BatAge',       u'R/G',
+                   u'G',        u'PA',        u'AB',         u'R',         u'H',
+                  u'2B',        u'3B',        u'HR',       u'RBI',        u'SB',
+                  u'CS',        u'BB',        u'SO',        u'BA',       u'OBP',
+                 u'SLG',       u'OPS',      u'OPS+',        u'TB',       u'GDP',
+                 u'HBP',        u'SH',        u'SF',       u'IBB',       u'LOB'],
+         dtype='object')
+    """ # noqa
     def __init__(self):
-        self.cache = None
-        self.raw_cache = None
+        self.year = None
+        self.cache = {}
+        self.raw_cache = {}
 
     def __getstate__(self):
         return (self.cache)
 
     def __setstate__(self, state):
         (self.cache) = state
-        self.raw_cache = None
+        self.raw_cache = {}
 
-    def scrape(self):
+    def scrape(self, year):
         """Scrape baseball-reference.com to get a list of all teams
 
         This only returns the active teams.
+
+        :param year: The year to get the abbreviations for
+        :type year: int
+        :return: Teams and their abbreviations
+        :rtype: pandas.DataFrame
         """
-        self._cache_source()
-        return self.cache
+        self._cache_source(year)
+        return self.cache[year]
 
-    def set_source(self, s):
-        self.raw_cache = s
+    def set_source(self, s, year):
+        self.raw_cache[year] = s
 
-    def save_source(self, f):
-        assert(self.raw_cache is not None)
+    def save_source(self, f, year):
+        assert(year in self.raw_cache)
         with open(f, "w") as fo:
-            fo.write(str(self.raw_cache))
+            fo.write(str(self.raw_cache[year]))
 
-    def _cache_source(self):
-        if self.cache is None:
-            if self.raw_cache is None:
-                self._soup()
-            self._parse_raw()
+    def _cache_source(self, year):
+        if year not in self.cache:
+            if year not in self.raw_cache:
+                self._soup(year)
+            self._parse_raw(year)
 
-    def _soup(self):
-        s = requests.get(self._url()).content
-        self.raw_cache = BeautifulSoup(s, "lxml")
+    def _soup(self, year):
+        s = requests.get(self._url(year)).content
+        self.raw_cache[year] = BeautifulSoup(s, "lxml")
 
-    def _url(self):
-        return "https://www.baseball-reference.com/teams/"
+    def _url(self, year):
+        return "https://www.baseball-reference.com/leagues/MLB/{}.shtml" \
+            .format(year)
 
-    def _parse_raw(self):
-        anchors = self.raw_cache.find_all('a')
-        headings = ["Franchise", "abbrev"]
+    def _parse_raw(self, year):
+        table = self.raw_cache[year].find_all('table')[0]
+        headings = ["Franchise"] + \
+            [th.get_text() for th in table.find("tr").find_all("th")]
+        assert(headings[1] == "Tm")
+        headings[1] = "abbrev"
         df = pd.DataFrame(data=[], columns=headings)
-        for i, anchor in enumerate(anchors):
-            if anchor.text == 'MLB Teams':
-                team_idx = i + 1
-                while team_idx < len(anchors):
-                    cols = self._parse_anchor(anchors[team_idx])
-                    if cols is None:
-                        break
-                    df = df.append(pd.DataFrame(data=[cols], columns=headings),
-                                   ignore_index=True)
-                    team_idx += 1
-        self.cache = df
+        table_body = table.find('tbody')
+        rows = table_body.find_all('tr')
+        for row in rows:
+            cols = self._parse_team(row)
+            if cols is not None:
+                df = df.append(pd.DataFrame(data=[cols], columns=headings),
+                               ignore_index=True)
+        self.cache[year] = df
 
-    def _parse_anchor(self, anchor):
-        if "href" in anchor.attrs:
-            abrev_re = re.compile("/teams/([A-Z]+)/")
-            m = abrev_re.match(anchor.attrs["href"])
-            if m is not None:
-                return [anchor.text.strip(), m.groups(0)[0]]
-        return None
-
-    def _is_moved_team(self, row):
-        if len(row.find_all('span')) > 0:
-            if "class" in row.span.attrs:
-                exp_class = set(["moved_names", "alternate_names"])
-                if exp_class.intersection(set(row.span.attrs["class"])):
-                    return True
-        return False
+    def _parse_team(self, row):
+        th = row.find_all("th")
+        assert(len(th) == 1)
+        tm_anchor = th[0].find_all('a')
+        if len(tm_anchor) == 1:
+            cols = []
+            assert("title" in tm_anchor[0].attrs)
+            cols.append(tm_anchor[0].attrs["title"])
+            cols.append(th[0].text)
+            for col in row.find_all("td"):
+                cols.append(col.text)
+            return cols
+        else:
+            return None

@@ -51,8 +51,9 @@ def test_scrape_may(bref_team):
     assert(df[df['W/L'].isin(['W', 'W-wo'])].count()[0] == 20)
 
 
-def test_scrape_team_list(bref_team_list):
-    df = bref_team_list.scrape()
+def test_scrape_team_summary(bref_team_summary):
+    df = bref_team_summary.scrape(2019)
     assert(len(df.index) == 30)
     assert(df[df.Franchise.str.endswith("Rays")].abbrev.iloc(0)[0] == "TBR")
     assert(df[df.Franchise.str.endswith("Dodgers")].abbrev.iloc(0)[0] == "LAD")
+    assert(df[df.Franchise.str.endswith("Marlins")].abbrev.iloc(0)[0] == "MIA")
