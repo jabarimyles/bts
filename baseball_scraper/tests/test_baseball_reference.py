@@ -54,4 +54,5 @@ def test_scrape_may(bref_team):
 def test_scrape_team_list(bref_team_list):
     df = bref_team_list.scrape()
     assert(len(df.index) == 30)
-    assert(df[df.Franchise.str.endswith("Rays")].abbrev.iloc(0)[0] == "TBD")
+    assert(df[df.Franchise.str.endswith("Rays")].abbrev.iloc(0)[0] == "TBR")
+    assert(df[df.Franchise.str.endswith("Dodgers")].abbrev.iloc(0)[0] == "LAD")

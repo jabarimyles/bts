@@ -286,15 +286,17 @@ class TeamListScraper:
     >>> tls = baseball_reference.TeamListScraper()
     >>> df = tls.scrape()
     >>> df.columns
-    Index([   u'abbrev', u'Franchise',      u'From',        u'To',        u'G',
-               u'W',         u'L',      u'W-L%',    u'G>.500',      u'Divs',
-           u'Pnnts',        u'WS',  u'Playoffs',   u'Players',      u'HOF#',
-               u'R',        u'AB',         u'H',        u'HR',        u'BA',
-              u'RA',       u'ERA'],
-      dtype='object')
+    Index([u'Franchise', u'abbrev'], dtype='object')
     """
     def __init__(self):
         self.cache = None
+        self.raw_cache = None
+
+    def __getstate__(self):
+        return (self.cache)
+
+    def __setstate__(self, state):
+        (self.cache) = state
         self.raw_cache = None
 
     def scrape(self):
@@ -327,36 +329,28 @@ class TeamListScraper:
         return "https://www.baseball-reference.com/teams/"
 
     def _parse_raw(self):
-        table = self.raw_cache.find_all('table')[0]
-        headings = [th.get_text() for th in table.find("tr").find_all("th")]
-        # The first column in the scrape table is rank.  We'll replace that
-        # with a franchise abbreviation that we extract out of the href link.
-        headings[0] = "abbrev"
+        anchors = self.raw_cache.find_all('a')
+        headings = ["Franchise", "abbrev"]
         df = pd.DataFrame(data=[], columns=headings)
-        table_body = table.find('tbody')
-        rows = table_body.find_all('tr')
-        for row in rows:
-            if not self._is_moved_team(row):
-                cols = self._parse_row(row)
-                df = df.append(pd.DataFrame(data=[cols], columns=headings),
-                               ignore_index=True)
+        for i, anchor in enumerate(anchors):
+            if anchor.text == 'MLB Teams':
+                team_idx = i + 1
+                while team_idx < len(anchors):
+                    cols = self._parse_anchor(anchors[team_idx])
+                    if cols is None:
+                        break
+                    df = df.append(pd.DataFrame(data=[cols], columns=headings),
+                                   ignore_index=True)
+                    team_idx += 1
         self.cache = df
 
-    def _parse_row(self, row):
-        cols = []
-        abrev_re = re.compile("/teams/([A-Z]+)/")
-        for col in row.find_all("td"):
-            # Extract out the href link to get the abbreviation as used by
-            # baseball-reference.
-            if "data-stat" in col.attrs and \
-                    col.attrs["data-stat"] == "franchise_name":
-                anchors = col.find_all("a")
-                assert(len(anchors) > 0 and "href" in anchors[0].attrs)
-                m = abrev_re.match(anchors[0].attrs["href"])
-                assert(m is not None)
-                cols.append(m.groups(0)[0])
-            cols.append(col.text)
-        return cols
+    def _parse_anchor(self, anchor):
+        if "href" in anchor.attrs:
+            abrev_re = re.compile("/teams/([A-Z]+)/")
+            m = abrev_re.match(anchor.attrs["href"])
+            if m is not None:
+                return [anchor.text.strip(), m.groups(0)[0]]
+        return None
 
     def _is_moved_team(self, row):
         if len(row.find_all('span')) > 0:

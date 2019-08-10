@@ -260,14 +260,9 @@ Using the `TeamListScraper` you can pull a list of active teams and a few attrib
     >>> tls = baseball_reference.TeamListScraper()
     >>> df = tls.scrape()
     >>> df.columns
-    Index([   u'abbrev', u'Franchise',      u'From',        u'To',        u'G',
-               u'W',         u'L',      u'W-L%',    u'G>.500',      u'Divs',
-           u'Pnnts',        u'WS',  u'Playoffs',   u'Players',      u'HOF#',
-               u'R',        u'AB',         u'H',        u'HR',        u'BA',
-              u'RA',       u'ERA'],
-      dtype='object')
+    Index([u'Franchise', u'abbrev'], dtype='object')
     >>> df[df.Franchise.str.endswith("Rays")].abbrev.iloc(0)[0]
-    'TBD'
+    'TBR'
 
 Standings
 ---------
