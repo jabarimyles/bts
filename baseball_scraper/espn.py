@@ -92,7 +92,7 @@ class ProbableStartersScraper:
                 else:
                     df = df.append(self._produce_df_row(day, p_anchors[0],
                                                         home_anchors))
-            else:
+            elif len(p_anchors) == 2:
                 df = df.append(self._produce_df_row(day, p_anchors[0],
                                                     home_anchors))
                 df = df.append(self._produce_df_row(day, p_anchors[1],

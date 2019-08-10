@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import datetime as dt
+import re
 
 
 class TeamScraper:
@@ -87,7 +88,7 @@ class TeamScraper:
         if self.team is None:
             raise RuntimeError("Must specify a team")
 
-    def _uri(self):
+    def _url(self):
         return "http://www.baseball-reference.com/" + \
             "teams/{}/{}-schedule-scores.shtml".format(self.team,
                                                        self.start_date.year)
@@ -105,7 +106,7 @@ class TeamScraper:
             self.season_cache[self.team][yr] = self._parse_raw(soup)
 
     def _soup(self):
-        s = requests.get(self._uri()).content
+        s = requests.get(self._url()).content
         if self.team not in self.season_raw_cache:
             self.season_raw_cache[self.team] = {}
         self.season_raw_cache[self.team][self.start_date.year] = \
@@ -276,3 +277,91 @@ class TeamScraper:
         df = df[(df['Date'] >= self.start_date) &
                 (df['Date'] <= self.end_date)]
         return df
+
+
+class TeamListScraper:
+    """A scraper that gets returns a list of all of the active teams
+
+    >>> from baseball_scraper import baseball_reference
+    >>> tls = baseball_reference.TeamListScraper()
+    >>> df = tls.scrape()
+    >>> df.columns
+    Index([   u'abbrev', u'Franchise',      u'From',        u'To',        u'G',
+               u'W',         u'L',      u'W-L%',    u'G>.500',      u'Divs',
+           u'Pnnts',        u'WS',  u'Playoffs',   u'Players',      u'HOF#',
+               u'R',        u'AB',         u'H',        u'HR',        u'BA',
+              u'RA',       u'ERA'],
+      dtype='object')
+    """
+    def __init__(self):
+        self.cache = None
+        self.raw_cache = None
+
+    def scrape(self):
+        """Scrape baseball-reference.com to get a list of all teams
+
+        This only returns the active teams.
+        """
+        self._cache_source()
+        return self.cache
+
+    def set_source(self, s):
+        self.raw_cache = s
+
+    def save_source(self, f):
+        assert(self.raw_cache is not None)
+        with open(f, "w") as fo:
+            fo.write(str(self.raw_cache))
+
+    def _cache_source(self):
+        if self.cache is None:
+            if self.raw_cache is None:
+                self._soup()
+            self._parse_raw()
+
+    def _soup(self):
+        s = requests.get(self._url()).content
+        self.raw_cache = BeautifulSoup(s, "lxml")
+
+    def _url(self):
+        return "https://www.baseball-reference.com/teams/"
+
+    def _parse_raw(self):
+        table = self.raw_cache.find_all('table')[0]
+        headings = [th.get_text() for th in table.find("tr").find_all("th")]
+        # The first column in the scrape table is rank.  We'll replace that
+        # with a franchise abbreviation that we extract out of the href link.
+        headings[0] = "abbrev"
+        df = pd.DataFrame(data=[], columns=headings)
+        table_body = table.find('tbody')
+        rows = table_body.find_all('tr')
+        for row in rows:
+            if not self._is_moved_team(row):
+                cols = self._parse_row(row)
+                df = df.append(pd.DataFrame(data=[cols], columns=headings),
+                               ignore_index=True)
+        self.cache = df
+
+    def _parse_row(self, row):
+        cols = []
+        abrev_re = re.compile("/teams/([A-Z]+)/")
+        for col in row.find_all("td"):
+            # Extract out the href link to get the abbreviation as used by
+            # baseball-reference.
+            if "data-stat" in col.attrs and \
+                    col.attrs["data-stat"] == "franchise_name":
+                anchors = col.find_all("a")
+                assert(len(anchors) > 0 and "href" in anchors[0].attrs)
+                m = abrev_re.match(anchors[0].attrs["href"])
+                assert(m is not None)
+                cols.append(m.groups(0)[0])
+            cols.append(col.text)
+        return cols
+
+    def _is_moved_team(self, row):
+        if len(row.find_all('span')) > 0:
+            if "class" in row.span.attrs:
+                exp_class = set(["moved_names", "alternate_names"])
+                if exp_class.intersection(set(row.span.attrs["class"])):
+                    return True
+        return False

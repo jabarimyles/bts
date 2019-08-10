@@ -250,6 +250,24 @@ If the season argument is set to the current season, the query returns results f
   [5 rows x 19 columns]
 
 
+Team List
+---------
+
+Using the `TeamListScraper` you can pull a list of active teams and a few attributes about each from baseball-reference.  This has benefit mainly to get a list of abbreviations that baseball-reference uses for each team, as there doesn't seem to be a standard.  This comes in handy when wanting to use another baseball-reference scraper such as `TeamList` and need to input the team abbreviation.
+
+::
+    >>> from baseball_scraper import baseball_reference
+    >>> tls = baseball_reference.TeamListScraper()
+    >>> df = tls.scrape()
+    >>> df.columns
+    Index([   u'abbrev', u'Franchise',      u'From',        u'To',        u'G',
+               u'W',         u'L',      u'W-L%',    u'G>.500',      u'Divs',
+           u'Pnnts',        u'WS',  u'Playoffs',   u'Players',      u'HOF#',
+               u'R',        u'AB',         u'H',        u'HR',        u'BA',
+              u'RA',       u'ERA'],
+      dtype='object')
+    >>> df[df.Franchise.str.endswith("Rays")].abbrev.iloc(0)[0]
+    'TBD'
 
 Standings
 ---------
