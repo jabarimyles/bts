@@ -73,7 +73,10 @@ class ProbableStartersScraper:
     def _parse_day(self, day):
         table = self._get_table(day)
         headings = [th.get_text() for th in table.find("tr").find_all("th")]
-        p_matchup_inx = headings.index('pitching matchup')
+        if 'pitching matchup' in headings:
+            p_matchup_inx = headings.index('pitching matchup')
+        else:
+            p_matchup_inx = None
         away_matchup_inx = headings.index('matchup')
         home_matchup_inx = away_matchup_inx + 1
         table_body = table.find('tbody')
@@ -81,11 +84,14 @@ class ProbableStartersScraper:
         df = pd.DataFrame()
         for row in rows:
             cols = row.find_all('td')
-            p_matchup_txt = cols[p_matchup_inx].text
-            p_anchors = cols[p_matchup_inx].find_all('a')
+            if p_matchup_inx is not None:
+                p_matchup_txt = cols[p_matchup_inx].text
+                p_anchors = cols[p_matchup_inx].find_all('a')
             home_anchors = cols[home_matchup_inx].find_all('a')
             away_anchors = cols[away_matchup_inx].find_all('a')
-            if p_matchup_txt.find("Undecided") != -1:
+            if p_matchup_inx is None:
+                pass
+            elif p_matchup_txt.find("Undecided") != -1:
                 if p_matchup_txt.find("Undecided vs") != -1:
                     df = df.append(self._produce_df_row(day, p_anchors[0],
                                                         away_anchors))
