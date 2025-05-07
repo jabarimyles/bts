@@ -1,4 +1,4 @@
-import baseball_scraper.utils
+import bts-mlb.utils
 from .playerid_lookup import playerid_reverse_lookup
 from .playerid_lookup import playerid_lookup
 from .statcast import statcast, statcast_single_game

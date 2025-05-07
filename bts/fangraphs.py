@@ -1,8 +1,12 @@
+import sys
+import os
+#sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 import shutil
 import pandas as pd
 import importlib.resources as pkg_resources
 from selenium.webdriver.common.by import By
-from baseball_scraper import selenium_helper
+from bts-mlb import selenium_helper
 from enum import Enum, auto
 
 
@@ -134,7 +138,7 @@ class ScraperGeneral:
         shutil.copy(self.dlr.downloaded_file(), f)
 
     def load_fake_cache(self, sample_file):
-        with pkg_resources.open_binary('baseball_scraper', sample_file) as fo:
+        with pkg_resources.open_binary('bts-mlb', sample_file) as fo:
             self.df = None
             self.df_source = fo
             self._cache_source()

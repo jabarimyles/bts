@@ -1,8 +1,13 @@
 #!/bin/python
+import sys
+import os
+#sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+# Add the project root to the sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 import pytest
-from baseball_scraper import fangraphs, baseball_reference, espn
-import os
+from bts-mlb import fangraphs, baseball_reference, espn
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 

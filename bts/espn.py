@@ -7,9 +7,9 @@ from bs4 import BeautifulSoup
 class ProbableStartersScraper:
     """Pulls probable starter info from espn.com
 
-    It retuns the probably starts over a defined date range.
+    It returns the probable starters over a defined date range.
 
-    :param state_date: Starting date range
+    :param start_date: Starting date range
     :type start_date: datetime.date
     :param end_date: Ending date range
     :type end_date: datetime.date
@@ -19,7 +19,7 @@ class ProbableStartersScraper:
             raise ValueError("Start date must be before or equal to end date")
         self.start_date = start_date
         self.end_date = end_date
-        self.raw_cache = {}   # Raw cache.  The key is the date
+        self.raw_cache = {}   # Raw cache. The key is the date
         self.cache = None
 
     def __getstate__(self):
@@ -32,7 +32,7 @@ class ProbableStartersScraper:
     def scrape(self):
         """Scrape the site and return a DataFrame of the results
 
-        :return: DataFrame listing every starting pitcher.  It leaves out any
+        :return: DataFrame listing every starting pitcher. It leaves out any
         undecided starter.
         :rtype: pandas.DataFrame
         """
@@ -51,7 +51,7 @@ class ProbableStartersScraper:
 
     def _get_uri(self, day):
         dt_fmt = day.strftime("%Y%m%d")
-        return "https://www.espn.com/mlb/schedule/_/date/{}".format(dt_fmt)
+        return f"https://www.espn.com/mlb/schedule/_/date/{dt_fmt}"
 
     def _cache_source(self):
         if self.cache is None:
@@ -59,10 +59,9 @@ class ProbableStartersScraper:
             res = pd.DataFrame()
             while cur_date <= self.end_date:
                 self._cache_raw_source(cur_date)
-                res = res.append(self._parse_day(cur_date))
+                res = pd.concat([res, self._parse_day(cur_date)], ignore_index=True)
                 cur_date = cur_date + timedelta(1)
-            res = res.reset_index()
-            res = res.drop(['index'], axis=1)
+            res = res.reset_index(drop=True)
             self.cache = res
 
     def _cache_raw_source(self, day):
@@ -93,16 +92,12 @@ class ProbableStartersScraper:
                 pass
             elif p_matchup_txt.find("Undecided") != -1:
                 if p_matchup_txt.find("Undecided vs") != -1:
-                    df = df.append(self._produce_df_row(day, p_anchors[0],
-                                                        away_anchors))
+                    df = pd.concat([df, self._produce_df_row(day, p_anchors[0], away_anchors)], ignore_index=True)
                 else:
-                    df = df.append(self._produce_df_row(day, p_anchors[0],
-                                                        home_anchors))
+                    df = pd.concat([df, self._produce_df_row(day, p_anchors[0], home_anchors)], ignore_index=True)
             elif len(p_anchors) == 2:
-                df = df.append(self._produce_df_row(day, p_anchors[0],
-                                                    home_anchors))
-                df = df.append(self._produce_df_row(day, p_anchors[1],
-                                                    away_anchors))
+                df = pd.concat([df, self._produce_df_row(day, p_anchors[0], home_anchors)], ignore_index=True)
+                df = pd.concat([df, self._produce_df_row(day, p_anchors[1], away_anchors)], ignore_index=True)
         return df
 
     def _produce_df_row(self, day, p_anchor, t_anchor):
@@ -115,7 +110,7 @@ class ProbableStartersScraper:
         id_loc = link.find("/id/")
         if id_loc == -1:
             raise ValueError("Could not extract espn ID from link: " + link)
-        espn_id = int(link[id_loc+4:])
+        espn_id = int(link[id_loc + 4:])
         return pd.DataFrame(data=[[day, player_name, espn_id, opponent]],
                             columns=["Date", "Name", "espn_id", "opponent"])
 
@@ -123,5 +118,4 @@ class ProbableStartersScraper:
         try:
             return self.raw_cache[day].find_all('table')[0]
         except IndexError:
-            raise ValueError("Pitcher probables cannot be retrieved for " +
-                             "this day ({}).".format(day))
+            raise ValueError(f"Pitcher probables cannot be retrieved for this day ({day}).")

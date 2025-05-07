@@ -133,7 +133,7 @@ class TeamScraper:
         data = pd.DataFrame(data)
         data = data.rename(columns=data.iloc[0])
         data = data.reindex(data.index.drop(0))
-        data = data.drop('', 1)  # not a useful column
+        data = data.drop('', axis=1)  # not a useful column
         data = self._process_win_streak(data)
         data = self._make_numeric(data)
         data = self._process_date(data)
@@ -218,7 +218,7 @@ class TeamScraper:
             data.loc[data['Streak'].str[0] == '-', 'Streak2'] = \
                 -data['Streak2']
             data['Streak'] = data['Streak2']
-            data = data.drop('Streak2', 1)
+            data = data.drop('Streak2', axis=1)
         return data
 
     def _make_numeric(self, data):
@@ -346,15 +346,25 @@ class TeamSummaryScraper:
             [th.get_text() for th in table.find("tr").find_all("th")]
         assert(headings[1] == "Tm")
         headings[1] = "abbrev"
+        
+        # Initialize an empty DataFrame with the given columns
         df = pd.DataFrame(data=[], columns=headings)
+        
         table_body = table.find('tbody')
         rows = table_body.find_all('tr')
+        
         for row in rows:
             cols = self._parse_team(row)
             if cols is not None:
-                df = df.append(pd.DataFrame(data=[cols], columns=headings),
-                               ignore_index=True)
+                # Create a new DataFrame for the row
+                new_df = pd.DataFrame(data=[cols], columns=headings)
+                
+                # Use pd.concat instead of append
+                df = pd.concat([df, new_df], ignore_index=True)
+        
+        # Store the DataFrame in the cache for later use
         self.cache[year] = df
+
 
     def _parse_team(self, row):
         th = row.find_all("th")

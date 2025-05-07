@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from baseball_scraper import espn
+from bts-mlb import espn
 import pytest
 
 

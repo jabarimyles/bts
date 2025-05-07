@@ -1,6 +1,6 @@
 #!/bin/python
 
-from baseball_scraper import fangraphs
+from bts-mlb import fangraphs
 import math
 
 
