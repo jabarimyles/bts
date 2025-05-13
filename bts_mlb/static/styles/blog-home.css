@@ -1,0 +1,135 @@
+/*!
+ * Start Bootstrap - Blog Home (https://startbootstrap.com/template-overviews/blog-home)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-blog-home/blob/master/LICENSE)
+ */
+.preds-div {
+  padding: 40px;
+  padding-top: 40px;
+  margin-top: 40px;
+}
+table {
+  padding: 40px;
+}
+
+body {
+  padding-top: 56px;
+}
+.blog-template {
+  height: 100%;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.header-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #05386B;
+  font-size: 32;
+  background-color: #333333;
+  padding-left: : 140px;
+  padding-right: 140px;
+  padding: 40px;
+  width: 50%;
+}
+
+.blog-title{
+  color: white;
+  text-align: center;
+  height: 100px;
+  top: 100px;
+}
+.blog-text {
+  margin-left: 20%;
+  margin-right: 20%;
+  margin-top: 40px;
+  font-size: 20px;
+}
+.logo-img {
+  height:120px;
+  padding-right: 40px;
+}
+.paige-container {
+  position: relative;
+  height: auto;
+  min-height: 100% !important;
+}
+.container{
+  margin-left: 0px;
+}
+.main-body {
+  padding-bottom: 60px;
+  padding-top: 60px;
+}
+.footer {
+   position:relative;
+   bottom:0;
+   width:100%;
+   height:60px;   /* Height of the footer */
+   background:#6cf;
+}
+
+#image-scraping{
+  background-image:
+      linear-gradient(
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.45)
+      ), url('../images/mook2.jpg');
+}
+#boarding-sim {
+  background-image:
+      linear-gradient(
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.45)
+      ), url('../images/boarding-sim.png');
+}
+#xgboost-kaggle {
+  background-image:
+      linear-gradient(
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.45)
+      ), url('../images/allstate-logo.png');
+}
+
+
+.code-block {
+  background-color: #333333;
+  color: white;
+}
+
+.fixed-bottom {
+    position: relative;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030
+}
+a {
+  color: #000000;
+  font-weight: bold;
+}
+
+
+.author {
+  color: #BBBBBB;
+}
+
+.image-right {
+  float: right;
+  margin: 30px;
+}
+
+.image-left {
+  float: left;
+  margin: 30px;
+}
+figcaption {
+  font-size: 12;
+  font-weight: lighter;
+  text-align: center;
+}

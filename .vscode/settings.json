@@ -1,0 +1,16 @@
+// {
+//   "python.defaultInterpreterPath": "/Users/jabarimyles/Documents/bts-mlb/venv/bin/python",
+//   "python.terminal.activateEnvironment": true,
+//   "terminal.integrated.profiles.osx": {
+//     "bash_with_venv": {
+//       "path": "bash",
+//       "args": ["-c", "source /Users/jabarimyles/Documents/bts-mlb/venv/bin/activate && exec bash"]
+//     }
+//   },
+//   "terminal.integrated.defaultProfile.osx": "bash_with_venv"
+// }
+
+{
+  "python.defaultInterpreterPath": "/Users/jabarimyles/Documents/bts-mlb/venv/bin/python",
+  "python.terminal.activateEnvironment": true
+}

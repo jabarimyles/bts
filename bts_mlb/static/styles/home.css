@@ -1,0 +1,147 @@
+
+
+
+
+table {
+  width: 200px;
+}
+
+.dashboard-item {
+  width: 240px;
+  margin: 0;
+  display: inline-block;
+
+}
+.row {
+  padding:10px;
+  width: 90%;
+  display: inline-block;
+  margin: 0 auto;
+}
+#dashboard {
+  display: grid;
+  display: inline-block;
+  padding-top: 20px;
+  width: 100%;
+  text-align: center;
+
+}
+#recipes {
+}
+.keyword-column {
+  display: none;
+}
+.details-column {
+  display: none;
+}
+.food-img {
+  height: 150px;
+  width: 150px;
+  object-fit: cover;
+  border-radius:50%;
+  display: block;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+}
+.player-name {
+  font-size: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+.btn-dash {
+  width: 200px;
+  height: 250px;
+  margin: 20px;
+  background-color: #EDF5E1;
+  display: inline-block;
+  border: 0px;
+    box-shadow: 0 0 1px #ccc;
+    -webkit-transition-duration: 0.5s;
+    -webkit-transform-origin: 50% 50%;
+    -webkit-transition-timing-function: ease-out;
+    -webkit-box-shadow: 0px -200px 0 0 #5CDB95 inset , 0px 200px 0 #5CDB95 inset;
+}
+.btn-dash:hover{
+  -webkit-box-shadow: 0px 0px 0 0px #5CDB95 inset , 0px 0px 0 0px #5CDB95 inset;
+}
+
+i {
+  padding-bottom: 20px;
+}
+
+
+.date-carousel {
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  display: inline;
+  height: 0.5in;
+  margin: auto;
+  position: relative;
+
+}
+
+.date-carousel-next,
+.date-carousel-prev,
+.date-carousel-input {
+  box-sizing: border-box;
+  position:relative;
+  border: none;
+}
+
+.date-carousel-next,
+.date-carousel-prev {
+  background-color: transparent;
+  color: black;
+  cursor: pointer;
+  font-size: larger;
+  font-weight: bold;
+  width: 0.5in;
+}
+
+.date-carousel-input {
+  color: black;
+  background-color: transparent;
+  text-align: center;
+  width: 2in;
+  font-size: 1.5rem;
+}
+
+/* Disable Native UI */
+
+.date-carousel-input::-webkit-inner-spin-button,
+.date-carousel-input::-webkit-input-placeholder{
+    display: none;
+    -webkit-appearance: none;
+}
+#date-screen {
+  width: 70px;
+  display: inline;
+}
+.carousel-btn {
+  height: 100%;
+  display: inline;
+  margin-top: auto;
+  margin-bottom: auto;
+  width: auto;
+  font-size: 36px;
+}
+.carousel {
+  display: inline-block;
+  width: 200px;
+  height: 100%;
+  width: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+  align-items: center;
+}
+.day {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  margin: 50px;
+}

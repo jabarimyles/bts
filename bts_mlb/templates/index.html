@@ -1,0 +1,72 @@
+
+
+{% extends "nav-template.html" %}
+{% block content %}
+
+<!-- Page Content -->
+
+  <div  class="preds-div">
+    <div class="carousel">
+      <input onclick="prev()" id="date-prev" type="button" class="date-carousel-prev carousel-btn" value="&lt;">
+      <div class="day" tabindex="0" role="option" aria-describedby="slick-slide015" style="width: 36px;" data-slick-index="15" aria-hidden="false">
+        <strong><p id='display-date' class="active" tabindex="0">{{ month | safe}} <span>{{ day | safe }}</span></p></strong>
+      </div>
+      <input onclick="next()" id="date-next" type="button" class="date-carousel-next carousel-btn" value="&gt;">
+    </div>
+    {{ table |  safe }}
+  </div>
+
+
+<!-- /.container -->
+
+  <script>
+  var xhr = new XMLHttpRequest();
+  var url = 'http://localhost:5000/changeDate'
+  var dates_str = '{{ dates_arr | tojson | safe}}';
+  var dates = JSON.parse(dates_str.slice(1,dates_str.length -1));
+  var index = {{ index }};
+  var max_ind = dates.length;
+  var display_date = document.getElementById('display-date');
+  var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+  for (var i=0; i<rows.length; i++){
+    rows[i].style.display = "none";
+  }
+  var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
+  for (var i=0; i<rows_shown.length; i++){
+    rows_shown[i].style.display = "";
+  }
+
+  function prev(){
+    if (index != 0) {
+      index -= 1;
+      console.log(JSON.stringify(dates[index]));
+      var day = dates[index]['day'];
+      var month = dates[index]['month'];
+      display_date.innerHTML = month+' <span>'+day+'</span>';
+      for (var i=0; i<rows.length; i++){
+        rows[i].style.display = "none";
+      }
+      var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
+      for (var i=0; i<rows_shown.length; i++){
+        rows_shown[i].style.display = "";
+      }
+    };
+  };
+    function next(){
+      if (index != max_ind - 1) {
+        index += 1;
+        console.log(JSON.stringify(dates[index]));
+        var day = dates[index]['day'];
+        var month = dates[index]['month'];
+        display_date.innerHTML = month+' <span>'+day+'</span>';
+        for (var i=0; i<rows.length; i++){
+          rows[i].style.display = "none";
+        }
+        var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
+        for (var i=0; i<rows_shown.length; i++){
+          rows_shown[i].style.display = "";
+        }
+      };
+    };
+    </script>
+    {% endblock %}
