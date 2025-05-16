@@ -8,7 +8,8 @@ import time
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
-from gcs_helpers import *
+from . import gcs_helpers
+
 
 import tempfile
 import json

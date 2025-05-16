@@ -6,7 +6,8 @@ import pickle
 from google.cloud import storage
 import io
 from io import BytesIO
-from gcs_helpers import *
+from . import gcs_helpers
+
 
 #-- Pypi paackages
 from flask import Flask, render_template, request, redirect, url_for, jsonify

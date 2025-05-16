@@ -2,7 +2,8 @@
 import os
 import sys
 from datetime import date
-from gcs_helpers import *
+from . import gcs_helpers
+
 
 #-- Pypi packages
 import pandas as pd
