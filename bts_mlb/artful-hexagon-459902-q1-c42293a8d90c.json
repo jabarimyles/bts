@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "artful-hexagon-459902-q1",
+  "private_key_id": "c42293a8d90c6fde7605aef489c8c6819567ac96",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCpUfmCP4eTrUzb\nNi3mogkAn40uh7nUo4ZuTstZGBZq7yHwqS3RBTSeAt1EFp1vY3pALWD2TqaE0lTJ\n1YFVeQQ61a4HoPUyTs55nFXoB5Y2KSfUqPvG/3EY0OOSAN/Cnkq5dxn2lHCe714z\nAc2kzOGTCfjNFudBxE7Qiry/DWaSVqdts8LP2iH/Ym7zI1hnadhubrNFVtUlLIKp\n7SKhhrepxqC3QsJhchB4RrcKePTtDt+uFN2uh5SGW2p4dVnBzKQlO/K+Xc9nJcLT\nH0arqNi5QEAPDoqUOuhCMO8PdIcmWBmCdePesA2x5lIs4+TDr7J5i5numZI1b17r\n1dcWi/bLAgMBAAECggEALDXTSEb+R3kAkFxdL9MvNpJycqvNwc/Q0gyQ2/qGH/XA\nju4doG4Thw6IZ7bf9K2sxgUTRDzVDek9alXtJzwp9pLElglY/IHHN8myRJt2hT3J\nwKU+2H7qMOiaAw1nX5GlQTfv94pavaUSm47k+xrj61i3NhW83Fc9nQYcsmX1WlAI\nd3DZrnk6yuYk/XoEkb+MnKDnrct/AM0rFEGsCrDhB8rEq70jP61sbAdpLlf3oMxU\nekx/IEKhg9V9x56ROOvCpQOZEoppS38N6J3OovRxfJYt5eFqPo/nNevnjn4rfbrf\nEZPg8d/VP3tUl5TEkaTJIlcQefSCtZSSVHIutFxLgQKBgQDqm7Z2mFbs5cwM7jBf\nF1VkLlnRprEewDsbHmh+Q+lpgXTqgS0iy3e+cES4521vLSCw614kyqk47elkQ02b\np6RvgUexRAFVdo2pVwhdZrytXwwGkKnR7oobh/B2nwW/HTTYIBT420HYCh0wQSps\nm39HeF14qKn1SMjFhTw8aAlcaQKBgQC4wkqYduaGTWVQnHtC3GfHAgDzHN1K+aU6\nhfERzz0lGLQksz6wgjhfxeLMJLQQsG6kbbmSwpIX/4Gtr6UJgnH/AuNowvTGNWf3\nYVhE0IujnhGZawPlh0Jd0JX2EcxX1dGPeFsisv4Uoibm/l/ilACfjuF9xa6OSrtO\nOabXgIHjEwKBgQCFljaWXvYYHF1M+4+1ha7MxYvFUfpGvUSqk20CgJ72wY0WPom5\n50t+t6SZ+MUaagLUWqEXqAIldWrQ+XXGbPW3vFBbQpLT3Bab1v/fVzGWMqnBTzwz\nWnVvab9le/UktnexnMr0TLy4TEIEiQakIwKdao8mtjtYfKI9vjjnWIIECQKBgCnt\n5fHt4ekOvXRq3spQrLiMKt0BavMt7qJ2bTwmdPDrR06g4xQ5qUOK7Cp6FedHswRb\n5mZ5A6CwmqRpHSIoWWiPJj7LJ7OnwR1yGQ8c6OPL5qCTmcHITXZu9OlwJpi0bKeL\nn9sjFehm2D9J8UbBYdbUHTZm23NtYE6jZMq5XkDDAoGBANUKhw+bRHPt13RyHbxd\n1u4zhnxmt/6HrLt7eaXEUreUPYrBGR0jFV8Hvfp9AXUBDeSKv41Wy7GwAPlY97LX\nRxHhwq3/otMrNcYmDmF2TZB5L48JVQ4wJK+hR38UetyBW9itYBDwLyLby9/qYCTz\nYE1I2aNBSNQsa9AGnTSPY/pa\n-----END PRIVATE KEY-----\n",
+  "client_email": "artful-hexagon-459902-q1@appspot.gserviceaccount.com",
+  "client_id": "109222451808794748929",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/artful-hexagon-459902-q1%40appspot.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
