@@ -23,7 +23,6 @@ from enterDailyPreds import enter
 from gcs_helpers import *
 from train_model import logistic
 
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 if __name__ == '__main__':

@@ -7,7 +7,6 @@ from google.cloud import storage
 import io
 from io import BytesIO
 from gcs_helpers import *
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- Pypi paackages
 from flask import Flask, render_template, request, redirect, url_for, jsonify

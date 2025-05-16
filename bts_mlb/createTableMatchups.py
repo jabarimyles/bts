@@ -9,7 +9,6 @@ import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
 from gcs_helpers import *
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- Custom packages
 

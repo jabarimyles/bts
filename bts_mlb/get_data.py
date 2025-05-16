@@ -11,7 +11,6 @@ from statcast import *
 
 #-- Custom packages
 from createTablePlayerMeta import get_player_meta
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 def get_statcast(sd, ed, table_dict={}, prod=True, append=True):

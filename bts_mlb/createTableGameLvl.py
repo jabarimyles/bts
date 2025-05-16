@@ -7,7 +7,6 @@ import pandas as pd
 pd.set_option('display.max_columns', 100)
 from statcast import *
 from gcs_helpers import *
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 def get_game_lvl(prod=False, table_dict={}):

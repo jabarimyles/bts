@@ -7,7 +7,6 @@ from pybaseball import playerid_reverse_lookup
 import pandas as pd
 from gcs_helpers import *
 from google.cloud import storage
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 save_dir = 'images'

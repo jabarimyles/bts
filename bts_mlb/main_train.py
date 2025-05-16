@@ -11,7 +11,6 @@ from train_model import logistic
 from createModelingData import get_modeling_data
 from gcs_helpers import *
 
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 if __name__ == '__main__':
