@@ -6,20 +6,21 @@ import sys
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
-
+from gcs_helpers import *
 #-- Custom packages
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- Functions
 def get_modeling_data():
-    game_lvl = pd.read_csv('./data/GameLvl.csv')
+    game_lvl = read_csv_from_gcs('bts-mlb','GameLvl.csv')
     game_lvl['PAs'] = game_lvl['hits'] + game_lvl['outs'] + game_lvl['non_abs']
     game_lvl['ABs'] = game_lvl['hits'] + game_lvl['outs']
     game_lvl['hit_ind'] = np.where( game_lvl['hits'] > 0, 1,0)
 
 
 
-    rp_batter = pd.read_csv('./data/RPBatter.csv')
-    ytd_batter = pd.read_csv('./data/YTDBatter.csv')
+    rp_batter = read_csv_from_gcs('bts-mlb','RPBatter.csv')
+    ytd_batter = read_csv_from_gcs('bts-mlb', 'YTDBatter.csv')
     rename_cols = {
         'rp_hits': 'ytd_hits',
         'rp_outs': 'ytd_outs',
@@ -36,7 +37,7 @@ def get_modeling_data():
     game_lvl['ytd_AB_div_PA'] = (game_lvl['ytd_ABs'] / game_lvl['ytd_PAs']).round(3)
     game_lvl['ytd_BA'] = (game_lvl['ytd_hits'] / game_lvl['ytd_ABs']).round(3)
 
-    rp_sp = pd.read_csv('./data/RPPitcher.csv')
+    rp_sp = read_csv_from_gcs('bts-mlb','RPPitcher.csv')
     rename_cols = {
         'rp_hits': 'rp_hits_sp',
         'rp_outs': 'rp_outs_sp',
@@ -54,7 +55,7 @@ def get_modeling_data():
     game_lvl['rp_AB_div_PA_sp'] = (game_lvl['rp_ABs_sp'] / game_lvl['rp_PAs_sp']).round(3)
     game_lvl['rp_BA_sp'] = (game_lvl['rp_hits_sp'] / game_lvl['rp_ABs_sp']).round(3)
 
-    ytd_sp = pd.read_csv('./data/YTDPitcher.csv')
+    ytd_sp = read_csv_from_gcs('bts-mlb','YTDPitcher.csv')
     rename_cols = {
         'rp_hits': 'ytd_hits_sp',
         'rp_outs': 'ytd_outs_sp',
@@ -86,7 +87,7 @@ def get_modeling_data():
     game_lvl['rp_AB_div_PA'] = (game_lvl['rp_ABs'] / game_lvl['rp_PAs']).round(3)
     game_lvl['rp_BA'] = (game_lvl['rp_hits'] / game_lvl['rp_ABs']).round(3)
 
-    matchups = pd.read_csv('./data/matchups.csv')
+    matchups = read_csv_from_gcs('bts-mlb','matchups.csv')
     matchups['match_year_PAs'] = matchups['year_hits']+matchups['year_outs']+matchups['year_non_abs']
     matchups['match_year_ABs'] = matchups['year_hits']+matchups['year_outs']
     matchups['match_year_BA'] =  (matchups['year_hits'] / matchups['match_year_ABs']).round(3)
@@ -105,7 +106,7 @@ def get_modeling_data():
     matchups = matchups.fillna(0)
     game_lvl = pd.merge(game_lvl, matchups, how='left', left_on=left_on, right_on=right_on)
 
-    player_meta = pd.read_csv('./data/player_meta.csv')
+    player_meta = read_csv_from_gcs('bts-mlb','player_meta.csv')
     player_meta = player_meta.loc[player_meta['pos']=='pitcher', ['player', 'p_throws']].drop_duplicates()
     game_lvl = pd.merge(game_lvl, player_meta, left_on='starting_pitcher', right_on='player')
     game_lvl['handedness_matchup'] = game_lvl['stand'] +'-'+ game_lvl['p_throws']
@@ -123,9 +124,9 @@ def get_modeling_data():
     game_lvl = game_lvl[modeling_vars + id_vars]
     game_lvl = pd.get_dummies(game_lvl, columns=dummy_vars, prefix ='', prefix_sep = '')
 
-    game_lvl.to_csv('./data/modeling_data.csv', index=False)
+    write_csv_to_gcs(game_lvl, 'bts-mlb', 'modeling_data.csv')
 
-    modeling_data = pd.read_csv('./data/modeling_data.csv').dropna()
+    modeling_data = read_csv_from_gcs('bts-mlb','modeling_data.csv').dropna()
     print("modeling_data shape: ", str(modeling_data.shape))
 
     modeling_data['ytd_BA_x_var'] = modeling_data['ytd_BA'] * modeling_data['ytd_hits_var']

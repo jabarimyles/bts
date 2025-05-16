@@ -5,10 +5,40 @@ import requests
 from tqdm import tqdm
 from pybaseball import playerid_reverse_lookup
 import pandas as pd
+from gcs_helpers import *
+from google.cloud import storage
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
-# Load your data
-with open('./data/table_dict.pickle', 'rb') as f:
-    td = pickle.load(f)
+
+save_dir = 'images'
+#os.makedirs(save_dir, exist_ok=True)
+
+def get_mlb_headshot_url(mlbam_id):
+    """Generate MLB headshot URL for a given MLBAM ID."""
+    return f"https://midfield.mlbstatic.com/v1/people/{mlbam_id}/spots/120"
+
+def download_image_to_gcs(url, bucket_name, blob_path):
+    """Download an image from URL and upload it to GCS."""
+    try:
+        res = requests.get(url, timeout=5)
+        res.raise_for_status()
+
+        # Initialize GCS client
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(blob_path)
+
+        # Upload image bytes directly
+        blob.upload_from_file(BytesIO(res.content), content_type=res.headers.get('Content-Type', 'image/jpeg'))
+
+        print(f"Image saved to gs:// + {blob}")
+        return True
+    except Exception as e:
+        print(f"Failed to download or upload {url}: {e}")
+        return False
+
+
+td = download_pickle_from_gcs('bts-mlb', 'table_dict.pickle')
 
 # Get unique batter and pitcher IDs
 bat_ids = list(pd.Series(td['statcast']['batter'].unique()).dropna().astype(int).unique())
@@ -22,26 +52,6 @@ try:
 except Exception as e:
     print("Error with pybaseball reverse lookup:", e)
     exit()
-
-save_dir = './static/images'
-os.makedirs(save_dir, exist_ok=True)
-
-def get_mlb_headshot_url(mlbam_id):
-    """Generate MLB headshot URL for a given MLBAM ID."""
-    return f"https://midfield.mlbstatic.com/v1/people/{mlbam_id}/spots/120"
-
-def download_image(url, save_path):
-    """Download and save the image to the specified path."""
-    try:
-        res = requests.get(url, timeout=5)
-        res.raise_for_status()
-        with open(save_path, 'wb') as f:
-            f.write(res.content)
-        return True
-    except Exception as e:
-        print(f"Failed to download {url}: {e}")
-        return False
-
 # Loop through player IDs and download headshot images
 for _, row in tqdm(mapping_df.iterrows(), total=mapping_df.shape[0], desc="Downloading images"):
     mlbam_id = int(row['key_mlbam'])
@@ -56,7 +66,7 @@ for _, row in tqdm(mapping_df.iterrows(), total=mapping_df.shape[0], desc="Downl
     print(f"Fetching image for MLBAM ID {mlbam_id} from {img_url}")
 
     # Download and save the image
-    download_image(img_url, img_path)
+    download_image_to_gcs(img_url, 'bts-mlb', img_path)
 
     # Add a delay to prevent hitting rate limits
     time.sleep(3)  # Adjust the sleep time as needed (e.g., 1-2 seconds)

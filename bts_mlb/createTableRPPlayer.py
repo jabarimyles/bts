@@ -8,15 +8,18 @@ import time
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
+from gcs_helpers import *
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- Custom packages
 
 
 def get_rpplayer(rp_period, file_name_out, pitch_or_bat, prod=False, table_dict={}):
     if prod == False:
-        data = pd.read_csv('./data/statcast.csv')
+        data = read_csv_from_gcs('bts-mlb','statcast.csv')
     else:
-        data = table_dict['statcast']
+        data = read_csv_from_gcs('bts-mlb','statcast.csv')
+
     game_date_df = data[['game_date', 'game_pk', pitch_or_bat, 'events_grouped']] # , 'md = pd.read_csv()'
     events_grouped_dummy = pd.get_dummies(game_date_df['events_grouped'])
     game_date_df = pd.concat([game_date_df, events_grouped_dummy], axis=1)
@@ -59,9 +62,9 @@ def get_rpplayer(rp_period, file_name_out, pitch_or_bat, prod=False, table_dict=
     full_dates['rp_hits_var'] = full_dates.groupby([pitch_or_bat, 'year'])['hit'].transform(lambda s: s.shift(1).rolling(rp_period, min_periods=1).var())
 
     if prod==False:
-        full_dates.to_csv(os.path.join('./data/', file_name_out), index=False)
+        write_csv_to_gcs(full_dates, 'bts-mlb', file_name_out)
     else:
-        return full_dates
+        write_csv_to_gcs(full_dates, 'bts-mlb', file_name_out)
     return None
 ''' -- To delete
     batter_rp = game_date_df[['game_date', 'batter', 'rp_start_date']].drop_duplicates()

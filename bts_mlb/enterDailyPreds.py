@@ -6,6 +6,8 @@ import re
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from gcs_helpers import *
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- import local python functions
 
@@ -104,8 +106,7 @@ def enter(pick1, pick2=None):
                 'player_id': re.search(player_id_search_pattern, src).group(1)
             }
             player_df = player_df.append(df_row, ignore_index=True)
-    player_df.to_csv('bts_player_df.csv', index=False)
-
+    write_csv_to_gcs(player_df, 'bts-mlb', 'bts_player_df.csv')
     #--- submit picks
     print('submitting picks....')
 

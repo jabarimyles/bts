@@ -6,11 +6,13 @@ import os
 import pandas as pd
 pd.set_option('display.max_columns', 100)
 from statcast import *
+from gcs_helpers import *
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 def get_player_meta(table_dict={}):
     if table_dict == {}:
-        orig_data = pd.read_csv('./data/statcast.csv')
+        orig_data = read_csv_from_gcs('bts-mlb','statcast.csv')
     else:
         orig_data = table_dict['statcast']
     batter_cols = ['batter', 'game_date', 'inning_topbot']
@@ -54,7 +56,7 @@ def get_player_meta(table_dict={}):
 
     players = pd.concat([batters, pitchers], axis=0, ignore_index=True)
     #if type(orig_data) == type(None):
-    players.to_csv('./data/player_meta.csv', index=False)
+    write_csv_to_gcs(players, 'bts-mlb', 'player_meta.csv')
     #else:
     #    return players
     return None

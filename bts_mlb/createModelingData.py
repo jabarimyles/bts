@@ -1,11 +1,14 @@
 #-- Base packages
 import os
 import sys
+import copy
 
 #-- Pypi packages
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
+from gcs_helpers import *
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- Custom packages
 
@@ -13,20 +16,20 @@ pd.set_option('display.max_columns', 100)
 def get_modeling_data(prod=False, table_dict={}):
 
     if prod == False:
-        game_lvl = pd.read_csv('./data/GameLvl.csv')
+        game_lvl = read_csv_from_gcs('bts-mlb','GameLvl.csv')
     else:
-        game_lvl = table_dict['gamelvl']
+        game_lvl = read_csv_from_gcs('bts-mlb','GameLvl.csv')
     game_lvl['PAs'] = game_lvl['hits'] + game_lvl['outs'] + game_lvl['non_abs']
     game_lvl['ABs'] = game_lvl['hits'] + game_lvl['outs']
     game_lvl['hit_ind'] = np.where( game_lvl['hits'] > 0, 1,0)
 
 
     if prod == False:
-        rp_batter = pd.read_csv('./data/RPBatter.csv')
-        ytd_batter = pd.read_csv('./data/YTDBatter.csv')
+        rp_batter = read_csv_from_gcs('bts-mlb','RPBatter.csv')
+        ytd_batter = read_csv_from_gcs('bts-mlb', 'YTDBatter.csv')
     else:
-        rp_batter = table_dict['rpbatter']
-        ytd_batter = table_dict['ytdbatter']
+        rp_batter = read_csv_from_gcs('bts-mlb','RPBatter.csv')
+        ytd_batter = read_csv_from_gcs('bts-mlb', 'YTDBatter.csv')
 
     rename_cols = {
         'rp_hits': 'ytd_hits',
@@ -46,11 +49,11 @@ def get_modeling_data(prod=False, table_dict={}):
 
 
     if prod == False:
-        rp_sp = pd.read_csv('./data/RPPitcher.csv')
-        ytd_sp = pd.read_csv('./data/YTDPitcher.csv')
+        rp_sp = read_csv_from_gcs('bts-mlb','RPPitcher.csv')
+        ytd_sp = read_csv_from_gcs('bts-mlb','YTDPitcher.csv')
     else:
-        rp_sp = table_dict['rppitcher']
-        ytd_sp = table_dict['ytdpitcher']
+        rp_sp = read_csv_from_gcs('bts-mlb','RPPitcher.csv')
+        ytd_sp = read_csv_from_gcs('bts-mlb','YTDPitcher.csv')
 
     rename_cols = {
         'rp_hits': 'rp_hits_sp',
@@ -101,9 +104,9 @@ def get_modeling_data(prod=False, table_dict={}):
     game_lvl['rp_BA'] = (game_lvl['rp_hits'] / game_lvl['rp_ABs']).round(3)
 
     if prod == False:
-        matchups = pd.read_csv('./data/matchups.csv')
+        matchups = read_csv_from_gcs('bts-mlb','matchups.csv')
     else:
-        matchups = table_dict['matchups']
+        matchups = read_csv_from_gcs('bts-mlb','matchups.csv')
 
     matchups['match_year_PAs'] = matchups['year_hits']+matchups['year_outs']+matchups['year_non_abs']
     matchups['match_year_ABs'] = matchups['year_hits']+matchups['year_outs']
@@ -121,15 +124,14 @@ def get_modeling_data(prod=False, table_dict={}):
     left_on = ['batter', 'starting_pitcher', 'game_pk']
     right_on = ['batter', 'pitcher', 'game_pk']
     matchups = matchups.fillna(0)
+    game_lvl_hold = copy.deepcopy(game_lvl)
     game_lvl = pd.merge(game_lvl, matchups, how='left', left_on=left_on, right_on=right_on)
 
 
     if prod == False:
-        player_meta = pd.read_csv('./data/player_meta.csv')
+        player_meta = read_csv_from_gcs('bts-mlb','player_meta.csv')
     else:
-        player_meta = table_dict['player_meta']
-        if player_meta == None:
-            player_meta = pd.read_csv('./data/player_meta.csv')
+        player_meta = read_csv_from_gcs('bts-mlb','player_meta.csv')
     player_meta = player_meta.loc[player_meta['pos']=='pitcher', ['pitcher', 'p_throws']].drop_duplicates()
     #common_values = set(game_lvl['starting_pitcher']).intersection(set(player_meta['player']))
     #print(f"Number of values in common: {len(common_values)}")
@@ -153,7 +155,7 @@ def get_modeling_data(prod=False, table_dict={}):
 
     #game_lvl.to_csv('./data/modeling_data.csv', index=False)
 
-    #modeling_data = pd.read_csv('./data/modeling_data.csv').dropna()
+    #modeling_data = read_csv_from_gcs('bts-mlb',modeling_data.csv').dropna()
     #print("modeling_data shape: ", str(modeling_data.shape))
     inputs = [
         'rp_BA', 'rp_AB_div_PA', 'ytd_BA', 'ytd_AB_div_PA', 'rp_BA_sp',
@@ -167,10 +169,34 @@ def get_modeling_data(prod=False, table_dict={}):
     game_lvl = game_lvl.dropna()
 
     print('game_lvl shape: {}'.format(str(game_lvl.shape)))
-    if prod == False:
-        train = game_lvl[game_lvl['game_date'] < '2019-01-01']
-        test = game_lvl[(game_lvl['game_date'] >= '2019-01-01') & (game_lvl['game_date'] < '2020-01-01')]
-        return train, train['hit_ind'], test, test['hit_ind']
-    else:
-        #game_lvl.to_csv('./data/prod_data.csv', index=False)
-        return game_lvl
+        # Ensure game_date is datetime
+    game_lvl['game_date'] = pd.to_datetime(game_lvl['game_date'])
+
+    # Calculate date range and midpoint
+    min_date = game_lvl['game_date'].min()
+    max_date = game_lvl['game_date'].max()
+    midpoint = min_date + (max_date - min_date) / 2
+
+    # Split
+    train = game_lvl[game_lvl['game_date'] < midpoint]
+    test = game_lvl[game_lvl['game_date'] >= midpoint]
+
+    write_csv_to_gcs(train, 'bts-mlb', 'x_train.csv')
+    write_csv_to_gcs(train['hit_ind'], 'bts-mlb', 'y_train.csv')
+    write_csv_to_gcs(test, 'bts-mlb', 'x_test.csv')
+    write_csv_to_gcs(test['hit_ind'], 'bts-mlb', 'y_test.csv')
+
+    if prod:
+        # Optional: export prod data
+        pass  # e.g., game_lvl.to_csv('./data/prod_data.csv', index=False)
+
+    return game_lvl #train, train['hit_ind'], test, test['hit_ind']
+    # if prod == False:
+    #     train = game_lvl[game_lvl['game_date'] < '2019-01-01']
+    #     test = game_lvl[(game_lvl['game_date'] >= '2019-01-01') & (game_lvl['game_date'] < '2020-01-01')]
+    #     return train, train['hit_ind'], test, test['hit_ind']
+    # else:
+    #     #game_lvl.to_csv('./data/prod_data.csv', index=False)
+    #     train = game_lvl[game_lvl['game_date'] < '2019-01-01']
+    #     test = game_lvl[(game_lvl['game_date'] >= '2019-01-01') & (game_lvl['game_date'] < '2020-01-01')]
+    #     return train, train['hit_ind'], test, test['hit_ind']

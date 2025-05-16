@@ -20,6 +20,10 @@ from createTableMatchups import get_matchups
 from createTodaysMatchups import get_todays_matchups
 from train_model import logistic
 from enterDailyPreds import enter
+from gcs_helpers import *
+from train_model import logistic
+
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 if __name__ == '__main__':
@@ -47,16 +51,17 @@ if __name__ == '__main__':
         get_matchups()
 
     elif train_or_prod == 'prod':
-        start_date = '2023-01-01'
+        start_date = '2024-03-01'
         #start_date needs to query current db to get max date + 1
         today = date.today()
         end_date   = '{}-{}-{}'.format(today.year, today.month, today.day)
-
+        end_date = '2025-06-30'
         table_dict = {}
 
         print('getting todays matchups... from {} to {}'.format(start_date, end_date))
         table_dict['todays_players'] = get_todays_matchups()
         print('querying statcast data....')
+        # TODO: try to read from gcs first, if not found, query statcast
         table_dict['statcast'] = get_statcast(sd=start_date, ed=end_date, prod=True, table_dict=table_dict, append=False)
         ##append todays records to statcast...
 
@@ -74,10 +79,15 @@ if __name__ == '__main__':
 
         print('get prod data...')
         table_dict['prod_data'] = get_modeling_data(prod=True, table_dict=table_dict)
+        # TODO: insert main_train.py code here
+        x_train = read_csv_from_gcs('bts-mlb','x_train.csv')
+        y_train = read_csv_from_gcs('bts-mlb','y_train.csv')
+        id_vars = ['game_date', 'game_pk', 'batter', 'starting_pitcher', 'ABs', 'hits', 'hit_ind']
+        model = logistic(x_train.drop(id_vars, axis=1), y_train)
+        model_name_file = 'model.pickle'
+        upload_pickle_to_gcs('bts-mlb', model_name_file, model)
+        #model = download_pickle_from_gcs('bts-mlb', 'model.pickle')
 
-        model_fp = './prod_model/model.pickle'
-        f = open(model_fp, 'rb')
-        model = pickle.load(f)
         #table_dict['todays_preds'] = table_dict['prod_data'].loc[table_dict['prod_data']['game_date']==table_dict['prod_data']['game_date'].max()]
         table_dict['todays_preds'] = table_dict['prod_data']
         id_vars = ['game_date', 'game_pk', 'batter', 'starting_pitcher', 'ABs', 'hits', 'hit_ind']
@@ -90,7 +100,7 @@ if __name__ == '__main__':
         #print(proba_hit.shape)
         #print(table_dict['todays_preds'].shape)
         table_dict['todays_preds']['proba'] = proba_hit
-
+        upload_pickle_to_gcs('bts-mlb', 'table_dict.pickle', table_dict)
         coef_df = pd.DataFrame({'coef_': model.coef_[0].tolist()})
         #coef_df['input'] = list(table_dict['todays_preds'].drop(id_vars, axis=1).columns)
         #coef_df = coef_df.append({'coef_':model.intercept_[0], 'input': 'intercept'})
@@ -100,14 +110,14 @@ if __name__ == '__main__':
 
 
         keep_cols = ['MLBID', 'MLBNAME']
-        meta = pd.read_csv('./data/player_id_mapping.csv')
+        meta = read_csv_from_gcs('bts-mlb','player_id_mapping.csv')
         meta = meta[keep_cols]
         table_dict['todays_preds'] = pd.merge(table_dict['todays_preds'], meta.rename(columns={'MLBNAME':'pitcher_name'}), how='left', left_on='starting_pitcher', right_on='MLBID')
         table_dict['todays_preds'] = pd.merge(table_dict['todays_preds'], meta.rename(columns={'MLBNAME':'batter_name'}), how='left', left_on='batter', right_on='MLBID')
 
         print(table_dict['todays_preds']['proba'].head())
         name_file = './data/table_dict' + '.pickle'
-        pickle.dump(table_dict, open(name_file, 'wb'))
+        upload_pickle_to_gcs('bts-mlb', name_file, table_dict)
         '''
         print(table_dict['todays_preds']['game_date'].value_counts())
         table_dict['todays_preds'] = table_dict['todays_preds'].loc[~table_dict['todays_preds']['game_date'].isna()]

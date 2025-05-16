@@ -3,7 +3,11 @@
 import os
 import sys
 import pickle
-
+from google.cloud import storage
+import io
+from io import BytesIO
+from gcs_helpers import *
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- Pypi paackages
 from flask import Flask, render_template, request, redirect, url_for, jsonify
@@ -29,26 +33,30 @@ app = Flask(__name__)
 
 @app.route('/')
 @app.route('/bts2')
+
 def main():
-    model_fp = './data/table_dict.pickle'
-    f = open(model_fp, 'rb')
-    table_dict = pickle.load(f)
+    model_fp = 'table_dict.pickle'
+    table_dict = download_pickle_from_gcs('bts-mlb', model_fp)
+
     preds = table_dict['todays_preds'].sort_values('proba', ascending=False)
-    preds = preds.dropna(subset=['batter', 'starting_pitcher', 'batter_name','pitcher_name' ]) #
+    preds = preds.dropna(subset=['batter', 'starting_pitcher']) #, 'batter_name','pitcher_name' 
 
     preds['proba'] = preds['proba'].apply(lambda x: "{0:.1f}%".format(x*100))
     #preds['batter_img'] = preds['batter'].apply(lambda x: '<img class="food-img" src=./static/images/{}.jpg  onError="this.onerror=null;this.src=./static/images/placeholder.jpg;"></img>'.format(int(x)))
     #preds['pitcher_img'] = preds['starting_pitcher'].apply(lambda x: '<img class="food-img" src=./static/images/{}.jpg onError="this.onerror=null;this.src=./static/images/placeholder.jpg;"></img>'.format(int(x)))
     preds['batter_img'] = preds['batter'].apply(
-    lambda x: f'<img class="food-img" src="/static/images/{int(x)}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">')
+    lambda x: '<img class="food-img" src="/static/images/{}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">'.format(int(x)))
+
 
     preds['pitcher_img'] = preds['starting_pitcher'].apply(
-        lambda x: f'<img class="food-img" src="/static/images/{int(x)}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">'
-    )
+    lambda x: '<img class="food-img" src="/static/images/{}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">'.format(int(x)))
 
-    
-    preds['batter_disp'] = "<a class='player-name'>"+preds['batter_name']+"</a>"+preds['batter_img']
-    preds['pitcher_disp'] = "<a class='player-name'>"+preds['pitcher_name']+"</a>"+preds['pitcher_img']
+
+    preds['batter_disp'] = "<a class='player-name'>" + preds['batter'].astype(str) + "</a>" + preds['batter_img']
+    preds['pitcher_disp'] = "<a class='player-name'>" + preds['starting_pitcher'].astype(str) + "</a>" + preds['pitcher_img']
+
+    #preds['batter_disp'] = "<a class='player-name'>"+preds['batter']+"</a>"+preds['batter_img']
+    #preds['pitcher_disp'] = "<a class='player-name'>"+preds['starting_pitcher']+"</a>"+preds['pitcher_img']
     preds['hit_outcomes'] = preds['hits'].astype(str) +' / '+ preds['ABs'].astype(str)
 
 

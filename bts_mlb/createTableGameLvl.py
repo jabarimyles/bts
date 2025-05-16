@@ -6,14 +6,16 @@ import os
 import pandas as pd
 pd.set_option('display.max_columns', 100)
 from statcast import *
+from gcs_helpers import *
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 
 def get_game_lvl(prod=False, table_dict={}):
 
     if prod == False:
-        orig_data = pd.read_csv('./data/statcast.csv')
+        orig_data = read_csv_from_gcs('bts-mlb','statcast.csv')
     else:
-        orig_data = table_dict['statcast']
+        orig_data = read_csv_from_gcs('bts-mlb','statcast.csv')
     orig_data = orig_data.loc[orig_data['game_type']=='R']
 
 
@@ -49,9 +51,10 @@ def get_game_lvl(prod=False, table_dict={}):
     print('---- game_data ----')
     print(game_data['game_date'].max())
     if prod==True:
+        write_csv_to_gcs(game_data, 'bts-mlb', 'GameLvl.csv')
         return game_data
     else:
-        game_data.to_csv('./data/GameLvl.csv', index=False)
+        write_csv_to_gcs(game_data, 'bts-mlb', 'GameLvl.csv')
         return None
 
 

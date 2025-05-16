@@ -8,13 +8,15 @@ import time
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
+from gcs_helpers import *
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jabarimyles/Documents/bts-mlb/bts_mlb/artful-hexagon-459902-q1-aaa874f8affd.json"
 
 #-- Custom packages
 
 
 def get_matchups(prod=False, table_dict={}):
     if table_dict == {}:
-        data = pd.read_csv('./data/statcast.csv')
+        data = read_csv_from_gcs('bts-mlb','statcast.csv')
     else:
         data = table_dict['statcast']
 
@@ -38,6 +40,7 @@ def get_matchups(prod=False, table_dict={}):
     game_lvl['career_games_played'] = game_lvl.groupby(['batter', 'pitcher'])['game_ind'].transform(lambda s: s.shift(1).rolling(365*20, min_periods=1).sum())
 
     if prod==True:
+        write_csv_to_gcs(game_lvl, 'bts-mlb', 'matchups.csv')
         return game_lvl
-    game_lvl.to_csv(os.path.join('./data/', 'matchups.csv'), index=False)
+    
     return None
