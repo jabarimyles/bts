@@ -27,7 +27,7 @@ service_account_info = {
 }
 
 
-with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
+with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as temp_file:
     json.dump(service_account_info, temp_file)
     temp_file_path = temp_file.name
 
