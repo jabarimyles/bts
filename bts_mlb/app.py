@@ -13,12 +13,27 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pandas as pd
 from datetime import datetime as dt
 from bs4 import BeautifulSoup
+
+import tempfile
+import json
+
+if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
+    creds_json_str = os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"]
+    
+    # Create a temporary file with the JSON content
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+        f.write(creds_json_str)
+        temp_path = f.name
+    
+    # Set the env var to this temp file path
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_path
 #import urllib.request
 #import pandas.io.sql as psql
 #import sqlalchemy
 #from sqlalchemy.types import INTEGER, TEXT
 
 #-- Custom packages
+
 
 
 app = Flask(__name__)

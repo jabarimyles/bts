@@ -10,6 +10,19 @@ import numpy as np
 pd.set_option('display.max_columns', 100)
 from gcs_helpers import *
 
+import tempfile
+import json
+
+if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
+    creds_json_str = os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"]
+    
+    # Create a temporary file with the JSON content
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+        f.write(creds_json_str)
+        temp_path = f.name
+    
+    # Set the env var to this temp file path
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_path
 #-- Custom packages
 
 
