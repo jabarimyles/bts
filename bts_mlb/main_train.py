@@ -20,7 +20,7 @@ with open(cred_path, "w") as f:
     f.write(os.environ["GOOGLE_CREDENTIALS_JSON"])
 
 # Set the environment variable for Google auth
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
 
 
 
