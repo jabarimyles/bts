@@ -5,7 +5,7 @@ import requests
 from tqdm import tqdm
 from pybaseball import playerid_reverse_lookup
 import pandas as pd
-from . import gcs_helpers
+from .gcs_helpers import *
 
 from google.cloud import storage
 

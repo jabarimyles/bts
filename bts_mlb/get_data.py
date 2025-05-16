@@ -2,7 +2,7 @@
 import os
 import sys
 from datetime import date
-from . import gcs_helpers
+from .gcs_helpers import *
 
 
 #-- Pypi packages

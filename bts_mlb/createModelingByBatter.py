@@ -6,7 +6,7 @@ import sys
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
-from . import gcs_helpers
+from .gcs_helpers import *
 
 import tempfile
 import json

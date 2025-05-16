@@ -6,7 +6,7 @@ import re
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from . import gcs_helpers
+from .gcs_helpers import *
 
 
 

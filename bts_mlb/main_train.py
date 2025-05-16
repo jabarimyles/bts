@@ -9,7 +9,7 @@ import pandas as pd
 #-- custom packages
 from train_model import logistic
 from createModelingData import get_modeling_data
-from . import gcs_helpers
+from .gcs_helpers import *
 
 
 import tempfile

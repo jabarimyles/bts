@@ -6,7 +6,7 @@ import pickle
 from google.cloud import storage
 import io
 from io import BytesIO
-from . import gcs_helpers
+from .gcs_helpers import *
 
 
 #-- Pypi paackages
