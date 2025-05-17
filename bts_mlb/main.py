@@ -38,7 +38,7 @@ from createTableMatchups import get_matchups
 from createTodaysMatchups import get_todays_matchups
 from train_model import logistic
 from enterDailyPreds import enter
-from gcs_helpers import *
+from bts_mlb.gcs_helpers import *
 
 from train_model import logistic
 
