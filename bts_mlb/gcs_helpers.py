@@ -9,6 +9,7 @@ import pandas as pd
 import tempfile
 import json
 
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"]  
 # Your service account JSON string from an env var or secret manager
 service_account_info = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
 
@@ -20,9 +21,6 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp
 # Set the environment variable
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
 
-
-# Set the environment variable for Google auth
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
 
 def read_csv_from_gcs(bucket_name, blob_name):
     client = storage.Client()

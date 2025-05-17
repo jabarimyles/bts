@@ -7,11 +7,12 @@ import copy
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
-from .gcs_helpers import *
+from gcs_helpers import *
 
 import tempfile
 import json
 
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"]  = 
 # Your service account JSON string from an env var or secret manager
 service_account_info = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
 
@@ -23,9 +24,6 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp
 # Set the environment variable
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
 
-
-# Set the environment variable for Google auth
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
 
 #-- Custom packages
 
@@ -207,7 +205,7 @@ def get_modeling_data(prod=False, table_dict={}):
         # Optional: export prod data
         pass  # e.g., game_lvl.to_csv('./data/prod_data.csv', index=False)
 
-    return game_lvl #train, train['hit_ind'], test, test['hit_ind']
+    return game_lvl, train, train['hit_ind'], test, test['hit_ind']
     # if prod == False:
     #     train = game_lvl[game_lvl['game_date'] < '2019-01-01']
     #     test = game_lvl[(game_lvl['game_date'] >= '2019-01-01') & (game_lvl['game_date'] < '2020-01-01')]
