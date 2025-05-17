@@ -9,17 +9,16 @@ import pandas as pd
 import tempfile
 import json
 
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"]  
 # Your service account JSON string from an env var or secret manager
-service_account_info = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
+# service_account_info = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
 
-# Write it to a temporary file
-with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
-    json.dump(service_account_info, temp_file)
-    temp_file_path = temp_file.name
+# # Write it to a temporary file
+# with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
+#     json.dump(service_account_info, temp_file)
+#     temp_file_path = temp_file.name
 
-# Set the environment variable
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
+# # Set the environment variable
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
 
 
 def read_csv_from_gcs(bucket_name, blob_name):
