@@ -5,7 +5,7 @@ import requests
 from tqdm import tqdm
 from pybaseball import playerid_reverse_lookup
 import pandas as pd
-from bts_mlb.gcs_helpers import *
+from gcs_helpers import *
 
 from google.cloud import storage
 
@@ -34,6 +34,19 @@ save_dir = 'images'
 def get_mlb_headshot_url(mlbam_id):
     """Generate MLB headshot URL for a given MLBAM ID."""
     return f"https://midfield.mlbstatic.com/v1/people/{mlbam_id}/spots/120"
+
+def download_image_locally(url, save_path):
+    """Download an image from URL and save it locally."""
+    try:
+        res = requests.get(url, timeout=5)
+        res.raise_for_status()
+        with open(save_path, 'wb') as f:
+            f.write(res.content)
+        print(f"Saved image to {save_path}")
+        return True
+    except Exception as e:
+        print(f"Failed to download {url}: {e}")
+        return False
 
 def download_image_to_gcs(url, bucket_name, blob_path):
     """Download an image from URL and upload it to GCS."""
@@ -74,7 +87,7 @@ except Exception as e:
 for _, row in tqdm(mapping_df.iterrows(), total=mapping_df.shape[0], desc="Downloading images"):
     mlbam_id = int(row['key_mlbam'])
     img_path = os.path.join(save_dir, f"{mlbam_id}.jpg")
-    
+    img_path = os.path.join('/Users/jabarimyles/Documents/bts-mlb/bts_mlb/static/images', f"{mlbam_id}.jpg")
     # Skip if the image already exists
     if os.path.exists(img_path):
         continue
@@ -84,6 +97,7 @@ for _, row in tqdm(mapping_df.iterrows(), total=mapping_df.shape[0], desc="Downl
     print(f"Fetching image for MLBAM ID {mlbam_id} from {img_url}")
 
     # Download and save the image
+    download_image_locally(img_url, img_path)
     download_image_to_gcs(img_url, 'bts-mlb', img_path)
 
     # Add a delay to prevent hitting rate limits

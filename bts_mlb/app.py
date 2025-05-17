@@ -1,12 +1,7 @@
-
 #-- Base packages
 import os
 import sys
 import pickle
-from google.cloud import storage
-import io
-from io import BytesIO
-from bts_mlb.gcs_helpers import *
 
 
 #-- Pypi paackages
@@ -14,34 +9,12 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pandas as pd
 from datetime import datetime as dt
 from bs4 import BeautifulSoup
-
-import tempfile
-import json
-
-
-
-# Your service account JSON string from an env var or secret manager
-service_account_info = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
-
-# Write it to a temporary file
-with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
-    json.dump(service_account_info, temp_file)
-    temp_file_path = temp_file.name
-
-# Set the environment variable
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
-
-
-
-# Set the environment variable for Google auth
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
 #import urllib.request
 #import pandas.io.sql as psql
 #import sqlalchemy
 #from sqlalchemy.types import INTEGER, TEXT
 
 #-- Custom packages
-
 
 
 app = Flask(__name__)
@@ -55,30 +28,26 @@ app = Flask(__name__)
 
 @app.route('/')
 @app.route('/bts2')
-
 def main():
-    model_fp = 'table_dict.pickle'
-    table_dict = download_pickle_from_gcs('bts-mlb', model_fp)
-
+    model_fp = './data/table_dict.pickle'
+    f = open(model_fp, 'rb')
+    table_dict = pickle.load(f)
     preds = table_dict['todays_preds'].sort_values('proba', ascending=False)
-    preds = preds.dropna(subset=['batter', 'starting_pitcher']) #, 'batter_name','pitcher_name' 
+    preds = preds.dropna(subset=['batter', 'starting_pitcher', 'batter_name','pitcher_name' ]) #
 
     preds['proba'] = preds['proba'].apply(lambda x: "{0:.1f}%".format(x*100))
     #preds['batter_img'] = preds['batter'].apply(lambda x: '<img class="food-img" src=./static/images/{}.jpg  onError="this.onerror=null;this.src=./static/images/placeholder.jpg;"></img>'.format(int(x)))
     #preds['pitcher_img'] = preds['starting_pitcher'].apply(lambda x: '<img class="food-img" src=./static/images/{}.jpg onError="this.onerror=null;this.src=./static/images/placeholder.jpg;"></img>'.format(int(x)))
     preds['batter_img'] = preds['batter'].apply(
-    lambda x: '<img class="food-img" src="/static/images/{}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">'.format(int(x)))
-
+    lambda x: f'<img class="food-img" src="/static/images/{int(x)}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">')
 
     preds['pitcher_img'] = preds['starting_pitcher'].apply(
-    lambda x: '<img class="food-img" src="/static/images/{}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">'.format(int(x)))
+        lambda x: f'<img class="food-img" src="/static/images/{int(x)}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">'
+    )
 
-
-    preds['batter_disp'] = "<a class='player-name'>" + preds['batter'].astype(str) + "</a>" + preds['batter_img']
-    preds['pitcher_disp'] = "<a class='player-name'>" + preds['starting_pitcher'].astype(str) + "</a>" + preds['pitcher_img']
-
-    #preds['batter_disp'] = "<a class='player-name'>"+preds['batter']+"</a>"+preds['batter_img']
-    #preds['pitcher_disp'] = "<a class='player-name'>"+preds['starting_pitcher']+"</a>"+preds['pitcher_img']
+    
+    preds['batter_disp'] = "<a class='player-name'>"+preds['batter_name']+"</a>"+preds['batter_img']
+    preds['pitcher_disp'] = "<a class='player-name'>"+preds['pitcher_name']+"</a>"+preds['pitcher_img']
     preds['hit_outcomes'] = preds['hits'].astype(str) +' / '+ preds['ABs'].astype(str)
 
 

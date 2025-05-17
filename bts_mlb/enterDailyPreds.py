@@ -6,8 +6,7 @@ import re
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from bts_mlb.gcs_helpers import *
-
+from gcs_helpers import *
 
 
 import tempfile

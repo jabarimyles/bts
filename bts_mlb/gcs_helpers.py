@@ -5,21 +5,35 @@ from google.cloud import storage
 import io
 from io import BytesIO
 import pandas as pd
+from datetime import timedelta
 
 import tempfile
 import json
 
 # Your service account JSON string from an env var or secret manager
-# service_account_info = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
+service_account_info = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
 
-# # Write it to a temporary file
-# with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
-#     json.dump(service_account_info, temp_file)
-#     temp_file_path = temp_file.name
+# Write it to a temporary file
+with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
+    json.dump(service_account_info, temp_file)
+    temp_file_path = temp_file.name
 
-# # Set the environment variable
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
+# Set the environment variable
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
 
+
+def get_signed_url(bucket_name, blob_name, expiration_minutes=60):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    
+    url = blob.generate_signed_url(
+        version="v4",
+        expiration=timedelta(minutes=expiration_minutes),
+        method="GET",
+        content_type="application/octet-stream"
+    )
+    return url
 
 def read_csv_from_gcs(bucket_name, blob_name):
     client = storage.Client()

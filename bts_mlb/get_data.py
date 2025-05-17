@@ -2,8 +2,7 @@
 import os
 import sys
 from datetime import date
-from bts_mlb.gcs_helpers import *
-
+from gcs_helpers import *
 
 #-- Pypi packages
 import pandas as pd

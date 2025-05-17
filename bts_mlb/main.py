@@ -38,8 +38,7 @@ from createTableMatchups import get_matchups
 from createTodaysMatchups import get_todays_matchups
 from train_model import logistic
 from enterDailyPreds import enter
-from bts_mlb.gcs_helpers import *
-
+from gcs_helpers import *
 from train_model import logistic
 
 
@@ -69,11 +68,11 @@ if __name__ == '__main__':
         get_matchups()
 
     elif train_or_prod == 'prod':
-        start_date = '2024-03-01'
+        start_date = '2022-03-01'
         #start_date needs to query current db to get max date + 1
         today = date.today()
         end_date   = '{}-{}-{}'.format(today.year, today.month, today.day)
-        end_date = '2025-06-30'
+        end_date = '2025-05-17'
         table_dict = {}
 
         print('getting todays matchups... from {} to {}'.format(start_date, end_date))
@@ -101,7 +100,7 @@ if __name__ == '__main__':
         x_train = read_csv_from_gcs('bts-mlb','x_train.csv')
         y_train = read_csv_from_gcs('bts-mlb','y_train.csv')
         id_vars = ['game_date', 'game_pk', 'batter', 'starting_pitcher', 'ABs', 'hits', 'hit_ind']
-        model, _, _, _, _ = logistic(x_train.drop(id_vars, axis=1), y_train)
+        model = logistic(x_train.drop(id_vars, axis=1), y_train)
         model_name_file = 'model.pkl'
         upload_pickle_to_gcs('bts-mlb', model_name_file, model)
         #model = download_pickle_from_gcs('bts-mlb', 'model.pickle')
