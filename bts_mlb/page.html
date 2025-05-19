@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>BTS Prediction Engine</title>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel= "stylesheet" type= "text/css" href= "/static/styles/bootstrap.min.css">
+  <!-- Custom styles for this template -->
+  <link rel= "stylesheet" type= "text/css" href= "/static/styles/blog-home.css">
+  <link rel= "stylesheet" type= "text/css" href= "/static/styles/blog-home.css">
+  <!-- <link rel= "stylesheet" type= "text/css" href= "/static/styles/recipe-search.css">
+  <link rel= "stylesheet" type= "text/css" href= "/static/styles/add-recipe.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
+  <link rel="icon" href="/static/images/bts.png">
+  <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+  <!--https://www.w3schools.com/icons/fontawesome5_icons_finance.asp-->
+  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
+
+
+</head>
+
+<body>
+  <div class="page-container">
+
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a href="/bts2">
+        <img class='logo-img' src="/static/images/bts.png" alt="">
+      </a>
+      <a class="navbar-brand" href="/bts2">BTS Prediction Engine</a>
+      <button class="navbar-toggler navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Todays Predictions
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Model Performance</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Historical Predictions</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class='main-body'>
+    
+
+<!-- Page Content -->
+
+  <div  class="preds-div">
+    <div class="carousel">
+      <input onclick="prev()" id="date-prev" type="button" class="date-carousel-prev carousel-btn" value="&lt;">
+      <div class="day" tabindex="0" role="option" aria-describedby="slick-slide015" style="width: 36px;" data-slick-index="15" aria-hidden="false">
+        <strong><p id='display-date' class="active" tabindex="0">May <span>17</span></p></strong>
+      </div>
+      <input onclick="next()" id="date-next" type="button" class="date-carousel-next carousel-btn" value="&gt;">
+    </div>
+    <table border="1" class="dataframe">
+<thead>
+<tr class="header" style="text-align: right;">
+<th>game_date</th>
+<th>Player</th>
+<th>Starting Pitcher</th>
+<th>Estimated Hit Probability</th>
+<th>hit_outcomes</th>
+<th>hit_ind</th>
+</tr>
+</thead>
+<tbody>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Matt Chapman</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/656305.jpg"/></td>
+<td><a class="player-name">Luis Severino</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/622663.jpg"/></td>
+<td>61.6%</td>
+<td>0 / 4</td>
+<td>0</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Willy Adames</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/642715.jpg"/></td>
+<td><a class="player-name">Luis Severino</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/622663.jpg"/></td>
+<td>61.3%</td>
+<td>0 / 4</td>
+<td>0</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Cody Bellinger</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/641355.jpg"/></td>
+<td><a class="player-name">Griffin Canning</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/656288.jpg"/></td>
+<td>60.6%</td>
+<td>1 / 3</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">CJ Abrams</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/682928.jpg"/></td>
+<td><a class="player-name">Charlie Morton</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/450203.jpg"/></td>
+<td>57.6%</td>
+<td>1 / 5</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Matt Olson</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/621566.jpg"/></td>
+<td><a class="player-name">Lucas Giolito</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/608337.jpg"/></td>
+<td>55.7%</td>
+<td>3 / 5</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Aaron Judge</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/592450.jpg"/></td>
+<td><a class="player-name">Griffin Canning</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/656288.jpg"/></td>
+<td>55.6%</td>
+<td>0 / 5</td>
+<td>0</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Ozzie Albies</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/645277.jpg"/></td>
+<td><a class="player-name">Lucas Giolito</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/608337.jpg"/></td>
+<td>55.5%</td>
+<td>1 / 3</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Nathaniel Lowe</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/663993.jpg"/></td>
+<td><a class="player-name">Charlie Morton</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/450203.jpg"/></td>
+<td>55.3%</td>
+<td>1 / 4</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Jose Altuve</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/514888.jpg"/></td>
+<td><a class="player-name">Tyler Mahle</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/641816.jpg"/></td>
+<td>52.9%</td>
+<td>1 / 3</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Christian Walker</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/572233.jpg"/></td>
+<td><a class="player-name">Tyler Mahle</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/641816.jpg"/></td>
+<td>52.6%</td>
+<td>1 / 4</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Isaac Paredes</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/670623.jpg"/></td>
+<td><a class="player-name">Tyler Mahle</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/641816.jpg"/></td>
+<td>52.0%</td>
+<td>1 / 4</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Austin Riley</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/663586.jpg"/></td>
+<td><a class="player-name">Lucas Giolito</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/608337.jpg"/></td>
+<td>51.8%</td>
+<td>1 / 3</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Ozzie Albies</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/645277.jpg"/></td>
+<td><a class="player-name">Lucas Giolito</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/608337.jpg"/></td>
+<td>51.7%</td>
+<td>1 / 2</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Marcell Ozuna</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/542303.jpg"/></td>
+<td><a class="player-name">Lucas Giolito</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/608337.jpg"/></td>
+<td>51.1%</td>
+<td>1 / 3</td>
+<td>1</td>
+</tr>
+<tr class="2025-05-17 00:00:00">
+<td>2025-05-17</td>
+<td><a class="player-name">Riley Greene</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/682985.jpg"/></td>
+<td><a class="player-name">Eric Lauer</a><img class="food-img" onerror="this.onerror=null;this.src='/static/images/placeholder.jpg';" src="/static/images/641778.jpg"/></td>
+<td>50.3%</td>
+<td>0 / 4</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+  </div>
+
+
+<!-- /.container -->
+
+  <script>
+  var xhr = new XMLHttpRequest();
+  var url = 'http://localhost:5000/changeDate'
+  var dates_str = '"[{\"month\":\"May\",\"day\":\"16\",\"month_num\":\"5\",\"game_date\":1747353600000},{\"month\":\"May\",\"day\":\"17\",\"month_num\":\"5\",\"game_date\":1747440000000}]"';
+  var dates = JSON.parse(dates_str.slice(1,dates_str.length -1));
+  var index = 1;
+  var max_ind = dates.length;
+  var display_date = document.getElementById('display-date');
+  var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+  
+  for (var i=0; i<rows.length; i++){
+    rows[i].style.display = "table-row"; // or just remove the line
+  }
+
+  var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
+  for (var i=0; i<rows_shown.length; i++){
+    rows_shown[i].style.display = "";
+  }
+
+  function prev(){
+    if (index != 0) {
+      index -= 1;
+      console.log(JSON.stringify(dates[index]));
+      var day = dates[index]['day'];
+      var month = dates[index]['month'];
+      display_date.innerHTML = month+' <span>'+day+'</span>';
+      for (var i=0; i<rows.length; i++){
+        rows[i].style.display = "none";
+      }
+      var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
+      for (var i=0; i<rows_shown.length; i++){
+        rows_shown[i].style.display = "";
+      }
+    };
+  };
+    function next(){
+      if (index != max_ind - 1) {
+        index += 1;
+        console.log(JSON.stringify(dates[index]));
+        var day = dates[index]['day'];
+        var month = dates[index]['month'];
+        display_date.innerHTML = month+' <span>'+day+'</span>';
+        for (var i=0; i<rows.length; i++){
+          rows[i].style.display = "none";
+        }
+        var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
+        for (var i=0; i<rows_shown.length; i++){
+          rows_shown[i].style.display = "";
+        }
+      };
+    };
+    </script>
+    
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Queen City Analytics 2019</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+  </div>
+
+  <!-- <script src="/static/js/jquery-3.3.1.slim.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/popper.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="/static/js/bootstrap-tagsinput.js"></script>
+  <script src="/static/js/add_recipe.js"></script> -->
+
+  <!-- Bootstrap core JavaScript
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/bundle.min.js"></script>
+  -->
+</div>
+</body>
+
+</html>

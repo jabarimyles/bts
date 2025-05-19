@@ -68,7 +68,7 @@ if __name__ == '__main__':
         get_matchups()
 
     elif train_or_prod == 'prod':
-        start_date = '2022-03-01'
+        start_date = '2025-03-01'
         #start_date needs to query current db to get max date + 1
         today = date.today()
         end_date   = '{}-{}-{}'.format(today.year, today.month, today.day)
@@ -95,34 +95,27 @@ if __name__ == '__main__':
         table_dict['matchups'] = get_matchups(prod=True, table_dict=table_dict)
 
         print('get prod data...')
-        table_dict['prod_data'] = get_modeling_data(prod=True, table_dict=table_dict)
+        table_dict['prod_data'], _ ,_ , _, _ = get_modeling_data(prod=True, table_dict=table_dict)
         # TODO: insert main_train.py code here
         x_train = read_csv_from_gcs('bts-mlb','x_train.csv')
         y_train = read_csv_from_gcs('bts-mlb','y_train.csv')
         id_vars = ['game_date', 'game_pk', 'batter', 'starting_pitcher', 'ABs', 'hits', 'hit_ind']
-        model = logistic(x_train.drop(id_vars, axis=1), y_train)
-        model_name_file = 'model.pkl'
-        upload_pickle_to_gcs('bts-mlb', model_name_file, model)
-        #model = download_pickle_from_gcs('bts-mlb', 'model.pickle')
+        try:
+            model = download_pickle_from_gcs('bts-mlb', 'model.pickle')
+        except:
+            model = logistic(x_train.drop(id_vars, axis=1), y_train)
+            model_name_file = 'model.pkl'
+            upload_pickle_to_gcs('bts-mlb', model_name_file, model)
 
-        #table_dict['todays_preds'] = table_dict['prod_data'].loc[table_dict['prod_data']['game_date']==table_dict['prod_data']['game_date'].max()]
         table_dict['todays_preds'] = table_dict['prod_data']
         id_vars = ['game_date', 'game_pk', 'batter', 'starting_pitcher', 'ABs', 'hits', 'hit_ind']
         print('--- checking cols ---')
-        print(table_dict['todays_preds'].drop(id_vars, axis=1).columns)
         preds = model.predict_proba(table_dict['todays_preds'].drop(id_vars, axis=1))
         print(preds[0:10])
         proba_hit = [i[1] for i in preds]
-        #print(proba_hit.head())
-        #print(proba_hit.shape)
-        #print(table_dict['todays_preds'].shape)
         table_dict['todays_preds']['proba'] = proba_hit
         upload_pickle_to_gcs('bts-mlb', 'table_dict.pickle', table_dict)
         coef_df = pd.DataFrame({'coef_': model.coef_[0].tolist()})
-        #coef_df['input'] = list(table_dict['todays_preds'].drop(id_vars, axis=1).columns)
-        #coef_df = coef_df.append({'coef_':model.intercept_[0], 'input': 'intercept'})
-        #coef_df['prob_'] = coef_df['coef_'].apply(lambda x: math.exp(x) / (1+math.exp(x)))
-        #
 
 
 
@@ -133,27 +126,9 @@ if __name__ == '__main__':
         table_dict['todays_preds'] = pd.merge(table_dict['todays_preds'], meta.rename(columns={'MLBNAME':'batter_name'}), how='left', left_on='batter', right_on='MLBID')
 
         print(table_dict['todays_preds']['proba'].head())
-        name_file = './data/table_dict' + '.pickle'
+        name_file = 'table_dict.pickle'
         upload_pickle_to_gcs('bts-mlb', name_file, table_dict)
-        '''
-        print(table_dict['todays_preds']['game_date'].value_counts())
-        table_dict['todays_preds'] = table_dict['todays_preds'].loc[~table_dict['todays_preds']['game_date'].isna()]
-        max_date = table_dict['todays_preds']['game_date'].max()
-        print(max_date)
-        table_dict['todays_preds'] = table_dict['todays_preds'].loc[table_dict['todays_preds']['game_date']==max_date]
-        print(table_dict['todays_preds'].head())
-        print(table_dict['todays_preds'].shape)
-        table_dict['todays_preds'] = table_dict['todays_preds'].sort_values('proba', ascending=False)
-        print(table_dict['todays_preds'].shape)
-        print(table_dict['todays_preds'].shape)
-        print(table_dict['todays_preds'][['batter', 'proba']].head())
-        table_dict['todays_preds']['batter'] = table_dict['todays_preds']['batter'].astype(int).astype(str).head()
-        pick1 = table_dict['todays_preds']['batter'].iloc[0]
-        pick2 = table_dict['todays_preds']['batter'].iloc[1]
-        print(pick1)
-        print(pick2)
-        enter(pick1, pick2)
-        '''
+
 
 
         #preditc_data_comb.to_sql()

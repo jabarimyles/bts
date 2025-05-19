@@ -27,7 +27,7 @@
   var display_date = document.getElementById('display-date');
   var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
   for (var i=0; i<rows.length; i++){
-    rows[i].style.display = "none";
+    rows[i].style.display = "table-row"; // or just remove the line
   }
   var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
   for (var i=0; i<rows_shown.length; i++){
@@ -42,7 +42,7 @@
       var month = dates[index]['month'];
       display_date.innerHTML = month+' <span>'+day+'</span>';
       for (var i=0; i<rows.length; i++){
-        rows[i].style.display = "none";
+        rows[i].style.display = "table-row"; // or just remove the line
       }
       var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
       for (var i=0; i<rows_shown.length; i++){
@@ -58,8 +58,9 @@
         var month = dates[index]['month'];
         display_date.innerHTML = month+' <span>'+day+'</span>';
         for (var i=0; i<rows.length; i++){
-          rows[i].style.display = "none";
+          rows[i].style.display = "table-row"; // or just remove the line
         }
+
         var rows_shown = document.getElementsByClassName(dates[index]['game_date']);
         for (var i=0; i<rows_shown.length; i++){
           rows_shown[i].style.display = "";
