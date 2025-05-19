@@ -7,8 +7,9 @@ name = "bts-mlb"
 version = "0.1.1"
 description = "This is a package used to beat the streak of the one and only Joe DiMaggio"
 authors = [
-    { name="Ned Hulseman", email="ned.hulseman@gmail.com" },
-    { name="Jabari Myles", email="jabari.a.myles@gmail.com" }
+    { name="Jabari Myles", email="jabari.a.myles@gmail.com" },
+    { name="Ned Hulseman", email="ned.hulseman@gmail.com" }
+    
 ]
 readme = "README.md"
 license = "MIT"
