@@ -51,7 +51,6 @@ def main():
     preds = preds.dropna(subset=['batter', 'starting_pitcher', 'batter_name','pitcher_name' ]) #
     # Make sure proba is numeric for sorting (if you've formatted it before)
     preds['proba'] = preds['proba'].astype(float)
-    breakpoint()
     # Sort by game_date and proba descending
     preds = preds.sort_values(by=['game_date', 'proba'], ascending=[True, False])
     # Keep only top 20 for each game_date
