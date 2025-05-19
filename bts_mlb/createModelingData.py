@@ -7,8 +7,8 @@ import copy
 import pandas as pd
 import numpy as np
 pd.set_option('display.max_columns', 100)
-from gcs_helpers import *
-import tempfile
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from gcs_helpers import *import tempfile
 import json
 
 #os.environ["GOOGLE_APPLICATION_CREDENTIALS"]  = 

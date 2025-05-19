@@ -6,8 +6,8 @@ import re
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gcs_helpers import *
-
 
 import tempfile
 import json

@@ -2,8 +2,8 @@
 import os
 import sys
 from datetime import date
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gcs_helpers import *
-
 #-- Pypi packages
 import pandas as pd
 pd.set_option('display.max_columns', 100)

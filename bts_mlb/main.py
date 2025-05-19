@@ -38,8 +38,8 @@ from createTableMatchups import get_matchups
 from createTodaysMatchups import get_todays_matchups
 from train_model import logistic
 from enterDailyPreds import enter
-from gcs_helpers import *
-from train_model import logistic
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from gcs_helpers import *from train_model import logistic
 
 
 

@@ -9,8 +9,8 @@ import pandas as pd
 #-- custom packages
 from train_model import logistic
 from createModelingData import get_modeling_data
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gcs_helpers import *
-
 import tempfile
 import json
 

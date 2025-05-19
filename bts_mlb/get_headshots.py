@@ -5,8 +5,8 @@ import requests
 from tqdm import tqdm
 from pybaseball import playerid_reverse_lookup
 import pandas as pd
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gcs_helpers import *
-
 from google.cloud import storage
 
 import tempfile
