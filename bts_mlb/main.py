@@ -39,7 +39,8 @@ from createTodaysMatchups import get_todays_matchups
 from train_model import logistic
 from enterDailyPreds import enter
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from gcs_helpers import *from train_model import logistic
+from gcs_helpers import *
+from train_model import logistic
 
 
 
@@ -72,14 +73,13 @@ if __name__ == '__main__':
         #start_date needs to query current db to get max date + 1
         today = date.today()
         end_date   = '{}-{}-{}'.format(today.year, today.month, today.day)
-        end_date = '2025-05-17'
         table_dict = {}
 
         print('getting todays matchups... from {} to {}'.format(start_date, end_date))
         table_dict['todays_players'] = get_todays_matchups()
         print('querying statcast data....')
         # TODO: try to read from gcs first, if not found, query statcast
-        table_dict['statcast'] = get_statcast(sd=start_date, ed=end_date, prod=True, table_dict=table_dict, append=False)
+        table_dict['statcast'] = get_statcast(sd=start_date, ed=end_date, prod=True, table_dict=table_dict, append=False, today=today)
         ##append todays records to statcast...
 
         print('creating rp_player data...')

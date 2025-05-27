@@ -30,10 +30,24 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
 from createTablePlayerMeta import get_player_meta
 
 
-def get_statcast(sd, ed, table_dict={}, prod=True, append=True):
+def get_statcast(sd, ed, table_dict={}, prod=True, append=True, today=''):
     try:
         old_df = read_csv_from_gcs('bts-mlb','statcast.csv')
-        return old_df
+        append = True
+        latest_date = old_df['game_date'].max()
+        # Convert to a date object (drop time)
+        if isinstance(latest_date, pd.Timestamp):
+            latest_date = latest_date.date()
+        elif isinstance(latest_date, str):
+            latest_date = pd.to_datetime(latest_date).date()
+        # Compare
+        if latest_date == today:
+                return old_df
+        else: 
+            sd = str(latest_date + datetime.timedelta(days=1))
+            ed = str(today)
+            raise RuntimeError("Missing most recent dates")
+
     except:
         tries = 0
         while True:
@@ -58,6 +72,11 @@ def get_statcast(sd, ed, table_dict={}, prod=True, append=True):
             'balls', 'strikes'
         ]
         data = data[keep_cols]
+        if append == True:
+            old_df = old_df.loc[:, ~old_df.columns.duplicated()]
+            data = data.loc[:, ~data.columns.duplicated()]
+            data = pd.concat([data, old_df], ignore_index=True)
+
 
         if len(table_dict.keys()) != 0:
             todays_matchups = table_dict['todays_players']
@@ -122,9 +141,6 @@ def get_statcast(sd, ed, table_dict={}, prod=True, append=True):
         recent_performance_range = 15
 
         data['game_date'] = data['game_date'].astype(str)
-        if append == True:
-            old_df = read_csv_from_gcs('bts-mlb','statcast.csv')
-            pd.concat([old_df, data], axis=0, ignore_index=True)
         write_csv_to_gcs(data, 'bts-mlb', 'statcast.csv')
         if prod==True:
             return data

@@ -22,7 +22,7 @@
   var url = 'http://localhost:5000/changeDate'
   var dates_str = '{{ dates_arr | tojson | safe}}';
   var dates = JSON.parse(dates_str.slice(1,dates_str.length -1));
-  var index = {{ index }};
+  var index = {{index}};
   var max_ind = dates.length;
   var display_date = document.getElementById('display-date');
   var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");

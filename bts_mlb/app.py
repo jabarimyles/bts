@@ -57,9 +57,6 @@ def main():
     preds = preds.groupby('game_date', group_keys=False).head(20)
 
     preds['proba'] = preds['proba'].apply(lambda x: "{0:.1f}%".format(x*100))
-    #preds['batter_img'] = preds['batter'].apply(lambda x: '<img class="food-img" src=./static/images/{}.jpg  onError="this.onerror=null;this.src=./static/images/placeholder.jpg;"></img>'.format(int(x)))
-    #preds['pitcher_img'] = preds['starting_pitcher'].apply(lambda x: '<img class="food-img" src=./static/images/{}.jpg onError="this.onerror=null;this.src=./static/images/placeholder.jpg;"></img>'.format(int(x)))
-
 
     preds['batter_img'] = preds['batter'].apply(
     lambda x: f'<img class="food-img" src="/static/images/{int(x)}.jpg" onError="this.onerror=null;this.src=\'/static/images/placeholder.jpg\';">')

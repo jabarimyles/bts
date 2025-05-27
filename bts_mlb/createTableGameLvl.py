@@ -6,6 +6,7 @@ import os
 import pandas as pd
 pd.set_option('display.max_columns', 100)
 from statcast import *
+import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gcs_helpers import *
 import tempfile
