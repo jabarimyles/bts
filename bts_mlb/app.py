@@ -54,7 +54,7 @@ def main():
     # Sort by game_date and proba descending
     preds = preds.sort_values(by=['game_date', 'proba'], ascending=[True, False])
     # Keep only top 20 for each game_date
-    preds = preds.groupby('game_date', group_keys=False).head(5)
+    preds = preds.head(25) #preds.groupby('game_date', group_keys=False).head(5)
 
     preds['proba'] = preds['proba'].apply(lambda x: "{0:.1f}%".format(x*100))
 
